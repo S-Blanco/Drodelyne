@@ -1,0 +1,7 @@
+.vscode/
+*.xcf
+
+/build/
+!build/CMakeLists.txt
+!build/external
+!build/Game
