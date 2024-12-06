@@ -2,6 +2,6 @@
 *.xcf
 
 /build/
-!build/CMakeLists.txt
-!build/external
-!build/Game
+!build/Game/*
+
+TODO.md
