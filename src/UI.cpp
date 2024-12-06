@@ -1,70 +1,60 @@
 #include "UI.h"
 #include "Layout.h" // included here because when included in UI.h, multiple include error even with pragma once?
 
-UI::UI(std::array<std::string, mDeckSize> PlayerDeck)
-    :mPlayer1Deck{PlayerDeck},mCardIndex{0}
+UI::UI(std::array<std::string, mDeckSize> PlayerDeckFile, std::array<int, 10> PlayerDeckID)
+    :mPlayer1DeckFile{PlayerDeckFile},mPlayer1DeckID{PlayerDeckID},mCardIndex{0}
     {
         // TODO : Make it actually random
-        std::shuffle(mDrawingPile.begin(), mDrawingPile.end(),std::default_random_engine(0));
-        #ifdef DEBUG
-            std::cout << "Deck shuffled: ";
-            for (int i=0; i<mDeckSize; ++i){ std::cout << mDrawingPile[i] << ","; }
-            std::cout << std::endl;
-        #endif
+        std::shuffle(mPlayer1DeckID.begin(), mPlayer1DeckID.end(),std::default_random_engine(0));
         {
         using namespace Layout;
-        mDeckSpot = Card(TopDeckX, TopDeckY, CardWidth, "../assets/img/cards/card_p1.png");
-        mCardSpots[0] = Card(TopHandX, TopHandY, CardWidth, mPlayer1Deck[mDrawingPile[mCardIndex]]);
+        mDeckSpot = Card(TopDeckX, TopDeckY, CardWidth, -1, "../assets/img/cards/card_p1.png");
+        mCardSpots[0] = Card(TopHandX, TopHandY, CardWidth, mPlayer1DeckID[mCardIndex], mPlayer1DeckFile[mPlayer1DeckID[mCardIndex]]);
         ++mCardIndex; // TODO : Probably need some checking if card loading went wrong before increasing the index
-        mCardSpots[1] = Card(TopHandX + CardWidth + CardMarginX, TopHandY, CardWidth, mPlayer1Deck[mDrawingPile[mCardIndex]]);
+        
+        mCardSpots[1] = Card(TopHandX + CardWidth + CardMarginX, TopHandY, CardWidth, mPlayer1DeckID[mCardIndex], mPlayer1DeckFile[mPlayer1DeckID[mCardIndex]]);
         ++mCardIndex;
-        mCardSpots[2] = Card(TopHandX, TopHandY + CardHeight + InterRowY, CardWidth, mPlayer1Deck[mDrawingPile[mCardIndex]]);
+        
+        mCardSpots[2] = Card(TopHandX, TopHandY + CardHeight + InterRowY, CardWidth, mPlayer1DeckID[mCardIndex], mPlayer1DeckFile[mPlayer1DeckID[mCardIndex]]);
         ++mCardIndex;
+        
         mCardSpots[3] = Card(TopHandX + CardWidth + CardMarginX, TopHandY + CardHeight + InterRowY, CardWidth);
-
-        for (int i=0; i<mDrawingSize; ++i){
-            mShufflePile[i] = mDrawingPile[mCardIndex + i];
+        
+        for (int i=0; i<mDrawingSize; ++i){ // copy rest of deck in shuffling pile to use for the rest of the game
+            mShufflePile[i] = mPlayer1DeckID[mCardIndex + i];
         }
-        #ifdef DEBUG
-            std::cout << "Shuffling pile: ";
-            for (int i=0; i<mDrawingSize; ++i){ std::cout << mShufflePile[i] << ","; }
-            std::cout << std::endl;
-        #endif
+
         mCardIndex={0}; // Reset because for now on, we'll draw from the shuffling pile and not the deck
         DrawCard(mCardSpots[3]);
 
-        mPreviewSpot = Card(BigModeX, BigModeY, BigCardWidth, "../assets/img/cards/card_p1_front.png");
+        mPreviewSpot = Card(BigModeX, BigModeY, BigCardWidth, -1,"../assets/img/cards/card_p1_front.png");
         mPreviewSpot.mIsActive = false;
         mPreviewSpot.mIsShown = false;
         }
     }
     
+
+void UI::SwapGraveyardAndShuffle(){
+    std::swap(mGraveyardPile, mShufflePile);
+    std::fill(std::begin(mGraveyardPile), std::end(mGraveyardPile), -1);
+    mCardIndex = 0;
+    // TODO: Make it actually random
+    std::shuffle(mShufflePile.begin(), mShufflePile.end(), std::default_random_engine(0));
+    return ;
+}
 void UI::DrawCard(Card& spot){
-    spot.SetImage(mPlayer1Deck[mShufflePile[mCardIndex]]);
+    if (mCardIndex >= mDrawingSize){ // no more card to draw
+        SwapGraveyardAndShuffle();
+    }
+    spot.SetImage(mPlayer1DeckFile[mShufflePile[mCardIndex]]);
+    spot.mID = mShufflePile[mCardIndex];
     spot.mIsEmpty = false;
     ++mCardIndex;
-    #ifdef DEBUG
-        std::cout << "Shuffling pile after draw: ";
-        for (int i=mCardIndex; i<mDrawingSize; ++i){ std::cout << mShufflePile[i] << ","; }
-        std::cout << std::endl;
-    #endif
     
 }
 void UI::HandleEvent(const SDL_Event& E){
     // card in preview spot was played
     if (E.type == Events::CARD_PLAYED){
-        #ifdef DEBUG
-            std::cout << std::format("Currently at card number {}", mCardIndex) << std::endl;
-        #endif
-        if (mCardIndex>=mDeckSize){
-            #ifdef DEBUG
-                std::cout << std::format("Reshuffling") << std::endl;
-            #endif
-            mCardIndex = 0;
-            // TODO: Make it actually random
-            std::shuffle(mDrawingPile.begin(), mDrawingPile.end(), std::default_random_engine(0));
-        }
-
         for (Card& spot : mCardSpots){
             if (spot.mIsEmpty){ DrawCard(spot); }
             spot.mIsEmpty = false;
@@ -74,32 +64,27 @@ void UI::HandleEvent(const SDL_Event& E){
     }
     
     if (E.type == SDL_MOUSEBUTTONDOWN){
-        mClickedOnCard=false;
+        mClickedOnHand=false;
 
         for (Card& spot : mCardSpots){ // Check if click on a card in the player's hand
             if(spot.mIsActive 
             && !spot.mIsEmpty
             && IsWithinBounds(E.motion.x, E.motion.y, spot)){
-                #ifdef DEBUG
-                    std::cout << std::format("[Hand] Handle the click") << std::endl;
-                #endif
                 mPreviewSpot.CopyImage(spot);
                 mPreviewSpot.mIsActive = true;
                 mPreviewSpot.mIsShown = true;
+                mPreviewSpot.mID = spot.mID;
                 spot.mIsEmpty = true;
                 spot.mIsShown = false;
-                mClickedOnCard=true;
-                for (Card& Card : mCardSpots){Card.mIsActive=false;}
+                mClickedOnHand=true;
+                for (Card& Card : mCardSpots){ Card.mIsActive=false; }
                 break;
             }
         }
-        // Check if player clicked on the card on the preview spot
-        if (!mClickedOnCard && mPreviewSpot.mIsActive && IsWithinBounds(E.motion.x, E.motion.y, mPreviewSpot)){
+        // Check if player clicked on the card in the preview spot
+        if (!mClickedOnHand && mPreviewSpot.mIsActive && IsWithinBounds(E.motion.x, E.motion.y, mPreviewSpot)){
             if(E.button.button == SDL_BUTTON_RIGHT){
-                #ifdef DEBUG
-                    std::cout << std::format("Right click") << std::endl;
-                    std::cout << std::format("[Preview] Handle the click") << std::endl;
-                #endif
+                // cancel the use of the card with right click
                 mPreviewSpot.mIsActive = false;
                 mPreviewSpot.mIsShown = false;
                 for (Card& Card : mCardSpots){
@@ -107,20 +92,12 @@ void UI::HandleEvent(const SDL_Event& E){
                     Card.mIsShown  = true;
                     Card.mIsEmpty  = false;
                 }
-
-                
             }else if (E.button.button == SDL_BUTTON_LEFT){
                 // Left click confirm player wants to use the card in the preview spot
                 // sends event PLAYED_CARD and next turn, we draw a new one.
-                
-                #ifdef DEBUG
-                    std::cout << std::format("Left click") << std::endl;
-                    std::cout << std::format("[Preview] Handle the click") << std::endl;
-                #endif
-                
                 mPreviewSpot.mIsActive = false;
                 mPreviewSpot.mIsShown = false;
-                // mGraveyardPile[mCardIndex] = 
+                    mGraveyardPile[mCardIndex-1] = mPreviewSpot.mID; //-1 because the discard is one card later compared to the draw
                 // TODO : Merge the 2 events.
                 // Since there can only have a unit played when a card is played, one of
                 // the 2 events generated (here and in Unit.HandleMouseClick) will disappear

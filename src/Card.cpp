@@ -1,12 +1,13 @@
 #include "Card.h"
 #include <format>
 
-Card::Card(int UpperX, int UpperY, int Width, std::string File)
+Card::Card(int UpperX, int UpperY, int Width, int CardID, std::string File)
     :mCardWidthClick{300},
     mCardHeightClick{static_cast<int>(mCardRatio*mCardWidthClick)},
     mCardWidthIdle{Width},
     mCardHeightIdle{static_cast<int>(mCardRatio*mCardWidthIdle)},
     mRectPosition{UpperX,UpperY,Width,static_cast<int>(mCardRatio*Width)},
+    mID{CardID},
     Button(UpperX, UpperY, mCardWidthIdle, 100)
     {
         ResizeButton(UpperX, UpperY, mCardWidthIdle, mCardHeightIdle);
@@ -18,7 +19,6 @@ Card::Card(int UpperX, int UpperY, int Width, std::string File)
             LoadFile(File.c_str(), mFullImage);
             LoadFile(mEmptyFile.c_str(), mEmptyImage);
         }
-        
 }
 
 

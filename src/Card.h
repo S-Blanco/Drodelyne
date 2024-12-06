@@ -8,7 +8,7 @@
 
 class Card: public Button{
     public:
-        Card(int UpperX, int UpperY, int Width, std::string File="");
+        Card(int UpperX, int UpperY, int Width, int ID=-1, std::string File="");
         Card() = default;
         ~Card(){};
         
@@ -25,6 +25,7 @@ class Card: public Button{
         const int GetRightX(){return mRectPosition.x + mRectPosition.w;}
         const int GetBottomY(){return mRectPosition.y + mRectPosition.h;}
         
+        int mID;
 
 
     private:

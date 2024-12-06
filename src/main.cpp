@@ -64,7 +64,7 @@ int main(int argc, char** argv) {
     int YStart = (DM.h - EmptyBoardHeight)/2;
     Window GameWindow(DM.w, DM.h);
 
-    std::array<std::string,10> PlayerDeck{ // TODO : Use proper storage of deck
+    std::array<std::string,10> PlayerDeckFile{ // TODO : Use proper storage of deck
         "../assets/img/cards/player1/bigJump.png",
         "../assets/img/cards/player1/bigKnight.png",
         "../assets/img/cards/player1/center.png",
@@ -77,7 +77,22 @@ int main(int argc, char** argv) {
         "../assets/img/cards/player1/side.png"
     };
 
-    UI GameUI(PlayerDeck);
+    // std::array<std::string,10> PlayerDeckFile{ 
+    //     "../assets/img/cards/card_p1_front0.png",
+    //     "../assets/img/cards/card_p1_front1.png",
+    //     "../assets/img/cards/card_p1_front2.png",
+    //     "../assets/img/cards/card_p1_front3.png",
+    //     "../assets/img/cards/card_p1_front4.png",
+    //     "../assets/img/cards/card_p1_front5.png",
+    //     "../assets/img/cards/card_p1_front6.png",
+    //     "../assets/img/cards/card_p1_front7.png",
+    //     "../assets/img/cards/card_p1_front8.png",
+    //     "../assets/img/cards/card_p1_front9.png"
+    // };
+    std::array<int,10> PlayerDeckID{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+
+    UI GameUI(PlayerDeckFile, PlayerDeckID);
     Board Arena{XStart, YStart, EmptyBoardWidth, EmptyBoardHeight};
     
     SDL_Event Event;
