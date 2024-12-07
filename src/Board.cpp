@@ -46,8 +46,8 @@ void Board::HandleEvent(const SDL_Event& E){
     {
     case SDL_MOUSEMOTION:
         mHasMoved = true;
-        MouseCol = (E.motion.x - mUpperX) / mCellWidth; 
-        MouseRow = (E.motion.y - mUpperY) / mCellHeight;
+        MouseCol = (E.motion.x - Config::MOUSE_X_SHIFT - mUpperX) / mCellWidth; 
+        MouseRow = (E.motion.y - Config::MOUSE_Y_SHIFT - mUpperY) / mCellHeight;
         if (IsIntersectionValid(MouseCol, MouseRow)){
             board[MouseRow][MouseCol].HandleMouseMotion(E.motion);
             mLastCol = MouseCol;

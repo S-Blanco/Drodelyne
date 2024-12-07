@@ -1,5 +1,6 @@
 #pragma once
 #include "Settings.h"
+#include "Global.h"
 
 #include <SDL.h>
 #include <SDL_mixer.h>
