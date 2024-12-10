@@ -95,8 +95,8 @@ void UI::HandleEvent(const SDL_Event& E){
                     Card.mIsShown  = true;
                     Card.mIsEmpty  = false;
                 }
-                SDL_Event CardSelected{Events::CARD_UNSELECTED};
-                SDL_PushEvent(&CardSelected);
+                SDL_Event CardUnselected{Events::CARD_UNSELECTED};
+                SDL_PushEvent(&CardUnselected);
             }else if (E.button.button == SDL_BUTTON_LEFT){
                 // Left click confirm player wants to use the card in the preview spot
                 // sends event PLAYED_CARD and next turn, we draw a new one.
@@ -108,7 +108,6 @@ void UI::HandleEvent(const SDL_Event& E){
                 // the 2 events generated (here and in Unit.HandleMouseClick) will disappear
                 SDL_Event CardPlayed{Events::CARD_PLAYED};
                 SDL_PushEvent(&CardPlayed);
-
             }
             
         }

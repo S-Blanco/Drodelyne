@@ -68,7 +68,7 @@ void Board::HandleEvent(const SDL_Event& E){
                 mOpponent = temp;
         }else if (E.type==Events::CARD_SELECTED){
         Forecaster(E.button.button);
-        }else if(E.type == Events::CARD_UNSELECTED){
+        }else if(E.type == Events::CARD_UNSELECTED || E.type == Events::CARD_PLAYED){
             ForecastResetter();
         }
     }
