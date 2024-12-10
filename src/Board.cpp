@@ -37,7 +37,7 @@ void Board::HandleEvent(const SDL_Event& E){
         mHasMoved = true;
         MouseCol = (E.motion.x - Config::MOUSE_X_SHIFT - mUpperX) / mCellWidth; 
         MouseRow = (E.motion.y - Config::MOUSE_Y_SHIFT - mUpperY) / mCellHeight;
-        if (IsIntersectionValid(MouseCol, MouseRow)){
+        if (IsIntersectionValid(MouseRow, MouseCol)){
             board[MouseRow][MouseCol].HandleMouseMotion(E.motion);
             mLastCol = MouseCol;
             mLastRow = MouseRow;
@@ -47,7 +47,7 @@ void Board::HandleEvent(const SDL_Event& E){
         MouseCol = (E.motion.x - mUpperX) / mCellWidth;
         MouseRow = (E.motion.y - mUpperY) / mCellHeight;
         if(IsMoveLegal(MouseRow, MouseCol)){
-            if (IsIntersectionValid(MouseCol, MouseRow)){
+            if (IsIntersectionValid(MouseRow, MouseCol)){
                 board[MouseRow][MouseCol].HandleMouseClick(E.button, mMoveNbr);
             };
         }
@@ -85,7 +85,7 @@ void Board::Render(SDL_Surface* Surface){
     }
 }
 
-bool Board::IsIntersectionValid(int X, int Y){ return (X >= 0 && X < mSize && Y >= 0 && Y < mSize); }
+bool Board::IsIntersectionValid(int row, int col){ return (row >= 0 && row < mSize && col >= 0 && col < mSize); }
 
 /*
     * Ensure that the hover image stays in place even if the mouse hasn't move this frame
@@ -96,6 +96,10 @@ void Board::CheckHover(){
 }
 
 bool Board::IsMoveLegal(int row, int col){
+    if(!IsIntersectionValid(row, col)) { return false;}
+    
+    if (mBoardState[row][col] == Player1
+    ||  mBoardState[row][col] == Player2) {return false;}
     
     if (   mBoardState[row+1][col] == mOpponent
         && mBoardState[row-1][col] == mOpponent
@@ -111,58 +115,219 @@ bool Board::IsMoveLegal(int row, int col){
 */
 void Board::Forecaster(int CardID){
     // TODO : Use correct values of cardID once we are assured that the system works
-    if (CardID == 0){ // adjacent moves
+    if (CardID == 0){ //bigJump
         for (int i = 0; i < mSize; ++i){
             for (int j = 0; j < mSize; ++j){
                 if(mBoardState[i][j] == mPlayerThisTurn){
-                    if (i-1 > 0  && mBoardState[i-1][j] == 0){
-                        mBoardState[i-1][j] = Forecast;
-                        board[i-1][j].mStatus = Forecast;
+                    if (IsMoveLegal(i-3,j)){
+                        mBoardState[i-3][j] = Forecast;
+                        board[i-3][j].mStatus = Forecast;
                     }
-                    if (i+1 < mSize && mBoardState[i+1][j] == 0){
-                        mBoardState[i+1][j] = Forecast;
-                        board[i+1][j].mStatus = Forecast;
+                    if (IsMoveLegal(i+3,j)){
+                        mBoardState[i+3][j] = Forecast;
+                        board[i+3][j].mStatus = Forecast;
                     }
-                    if (j-1 > 0  && mBoardState[i][j-1] == 0){
-                        mBoardState[i][j-1] = Forecast;
-                        board[i][j-1].mStatus = Forecast;
+                    if (IsMoveLegal(i,j-3)){
+                        mBoardState[i][j-3] = Forecast;
+                        board[i][j-3].mStatus = Forecast;
                     }
-                    if (j+1 < mSize && mBoardState[i][j+1] == 0){
-                        mBoardState[i][j+1] = Forecast;
-                        board[i][j+1].mStatus = Forecast;
+                    if (IsMoveLegal(i,j+3)){
+                        mBoardState[i][j+3] = Forecast;
+                        board[i][j+3].mStatus = Forecast;
                     }
                 }
             }
         }
-    }else if(CardID == 1){ // diagonal moves
+    }else if(CardID == 1){ // bigKnight
         for (int i = 0; i < mSize; ++i){
             for (int j = 0; j < mSize; ++j){
                 if(mBoardState[i][j] == mPlayerThisTurn){
-                    if (i-1>0  && j-1>0  && mBoardState[i-1][j-1] == 0){
+                    if (IsMoveLegal(i-3,j+1)){
+                        mBoardState[i-3][j+1] = Forecast;
+                        board[i-3][j+1].mStatus = Forecast;
+                    }
+                    if (IsMoveLegal(i-3,j-1)){
+                        mBoardState[i-3][j-1] = Forecast;
+                        board[i-3][j-1].mStatus = Forecast;
+                    }
+                    if (IsMoveLegal(i+3,j+1)){
+                        mBoardState[i+3][j+1] = Forecast;
+                        board[i+3][j+1].mStatus = Forecast;
+                    }
+                    if (IsMoveLegal(i+3,j-1)){
+                        mBoardState[i+3][j-1] = Forecast;
+                        board[i+3][j-1].mStatus = Forecast;
+                    }
+                    if (IsMoveLegal(i+1,j-3)){
+                        mBoardState[i+1][j-3] = Forecast;
+                        board[i+1][j-3].mStatus = Forecast;
+                    }
+                    if (IsMoveLegal(i-1,j-3)){
+                        mBoardState[i-1][j-3] = Forecast;
+                        board[i-1][j-3].mStatus = Forecast;
+                    }
+                    if (IsMoveLegal(i+1,j+3)){
+                        mBoardState[i+1][j+3] = Forecast;
+                        board[i+1][j+3].mStatus = Forecast;
+                    }
+                    if (IsMoveLegal(i-1,j+3)){
+                        mBoardState[i-1][j+3] = Forecast;
+                        board[i-1][j+3].mStatus = Forecast;
+                    }
+                }
+            }
+        }
+    } else if(CardID == 2){ // center
+        for (int i=0; i<mSize; ++i){
+            for (int j=0; j<mSize; ++j){
+                if (IsMoveLegal(i,j)
+                &&  i>2 && i<mSize-3
+                &&  j>2 && j<mSize-3){
+                    mBoardState[i][j] = Forecast;
+                    board[i][j].mStatus = Forecast;
+                }
+            }
+        }
+    } else if(CardID == 3){ // corner
+        for (int i = 0; i < mSize; ++i){
+            for (int j = 0; j < mSize; ++j){
+                if ((i < 4 || i > mSize-5)
+                &&  (j < 4 || j > mSize-5)
+                &&  IsMoveLegal(i,j)){
+                    mBoardState[i][j] = Forecast;
+                    board[i][j].mStatus = Forecast;
+                }
+            }
+        }
+    } else if(CardID == 4){ // diagonal moves
+        for (int i = 0; i < mSize; ++i){
+            for (int j = 0; j < mSize; ++j){
+                if(mBoardState[i][j] == mPlayerThisTurn){
+                    if (IsMoveLegal(i-1, j-1)){
                         mBoardState[i-1][j-1] = Forecast;
                         board[i-1][j-1].mStatus = Forecast;
                     }
-                    if (i+1<mSize && j+1<mSize && mBoardState[i+1][j+1] == 0){
+                    if (IsMoveLegal(i+1, j+1)){
                         mBoardState[i+1][j+1] = Forecast;
                         board[i+1][j+1].mStatus = Forecast;
                     }
-                    if (i-1>0  && j+1<mSize && mBoardState[i-1][j+1] == 0){
+                    if (IsMoveLegal(i-1, j+1)){
                         mBoardState[i-1][j+1] = Forecast;
                         board[i-1][j+1].mStatus = Forecast;
                     }
-                    if (i+1<mSize && j-1>0  && mBoardState[i+1][j-1] == 0){
+                    if (IsMoveLegal(i+1, j-1)){
                         mBoardState[i+1][j-1] = Forecast;
                         board[i+1][j-1].mStatus = Forecast;
                     }
                 }
             }
         }
-    }else if(CardID == 2){
-        for (int i=0; i<mSize; ++i){
-            for (int j=0; j<mSize; ++j){
-                if (i>2 && i<mSize-3 && j>2 && j<mSize-3){
+    }else if(CardID == 5){ // free
+        for (int i = 0; i < mSize; ++i){
+            for (int j = 0; j < mSize; ++j){
+                if (IsMoveLegal(i,j)){
                     mBoardState[i][j] = Forecast;
                     board[i][j].mStatus = Forecast;
+                }
+                
+            }
+        }
+    } else if(CardID == 6){ // jump
+        for (int i = 0; i < mSize; ++i){
+            for (int j = 0; j < mSize; ++j){
+                if(mBoardState[i][j] == mPlayerThisTurn){
+                    if (IsMoveLegal(i-2,j)){
+                        mBoardState[i-2][j] = Forecast;
+                        board[i-2][j].mStatus = Forecast;
+                    }
+                    if (IsMoveLegal(i+2,j)){
+                        mBoardState[i+2][j] = Forecast;
+                        board[i+2][j].mStatus = Forecast;
+                    }
+                    if (IsMoveLegal(i,j-2)){
+                        mBoardState[i][j-2] = Forecast;
+                        board[i][j-2].mStatus = Forecast;
+                    }
+                    if (IsMoveLegal(i,j+2)){
+                        mBoardState[i][j+2] = Forecast;
+                        board[i][j+2].mStatus = Forecast;
+                    }
+                }
+            }
+        }
+    } else if(CardID == 7){ // knight
+                for (int i = 0; i < mSize; ++i){
+            for (int j = 0; j < mSize; ++j){
+                if(mBoardState[i][j] == mPlayerThisTurn){
+                    if (IsMoveLegal(i-2,j+1)){
+                        mBoardState[i-2][j+1] = Forecast;
+                        board[i-2][j+1].mStatus = Forecast;
+                    }
+                    if (IsMoveLegal(i-2,j-1)){
+                        mBoardState[i-2][j-1] = Forecast;
+                        board[i-2][j-1].mStatus = Forecast;
+                    }
+                    if (IsMoveLegal(i+2,j+1)){
+                        mBoardState[i+2][j+1] = Forecast;
+                        board[i+2][j+1].mStatus = Forecast;
+                    }
+                    if (IsMoveLegal(i+2,j-1)){
+                        mBoardState[i+2][j-1] = Forecast;
+                        board[i+2][j-1].mStatus = Forecast;
+                    }
+                    if (IsMoveLegal(i+1,j-2)){
+                        mBoardState[i+1][j-2] = Forecast;
+                        board[i+1][j-2].mStatus = Forecast;
+                    }
+                    if (IsMoveLegal(i-1,j-2)){
+                        mBoardState[i-1][j-2] = Forecast;
+                        board[i-1][j-2].mStatus = Forecast;
+                    }
+                    if (IsMoveLegal(i+1,j+2)){
+                        mBoardState[i+1][j+2] = Forecast;
+                        board[i+1][j+2].mStatus = Forecast;
+                    }
+                    if (IsMoveLegal(i-1,j+2)){
+                        mBoardState[i-1][j+2] = Forecast;
+                        board[i-1][j+2].mStatus = Forecast;
+                    }
+                }
+            }
+        }
+    } else if(CardID == 8){ // neighbour
+        for (int i = 0; i < mSize; ++i){
+            for (int j = 0; j < mSize; ++j){
+                if(mBoardState[i][j] == mPlayerThisTurn){
+                    if (IsMoveLegal(i-1,j)){
+                        mBoardState[i-1][j] = Forecast;
+                        board[i-1][j].mStatus = Forecast;
+                    }
+                    if (IsMoveLegal(i+1,j)){
+                        mBoardState[i+1][j] = Forecast;
+                        board[i+1][j].mStatus = Forecast;
+                    }
+                    if (IsMoveLegal(i,j-1)){
+                        mBoardState[i][j-1] = Forecast;
+                        board[i][j-1].mStatus = Forecast;
+                    }
+                    if (IsMoveLegal(i,j+1)){
+                        mBoardState[i][j+1] = Forecast;
+                        board[i][j+1].mStatus = Forecast;
+                    }
+                }
+            }
+        }
+    } else if(CardID == 9){ // side
+        for (int i = 0; i < mSize; ++i){
+            for (int j = 0; j < mSize; ++j){
+                if (
+                    ((i < 4 || i > mSize-5) && j > 3 && j < mSize-4)
+                ||  ((j < 4 || j > mSize-5) && i > 3 && i < mSize-4)
+                ){
+                    if (IsMoveLegal(i,j)){
+                        mBoardState[i][j] = Forecast;
+                        board[i][j].mStatus = Forecast;
+                    }
                 }
             }
         }
