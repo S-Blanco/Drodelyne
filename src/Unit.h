@@ -8,7 +8,7 @@
 #include "Rectangle.h"
 #include "Image.h"
 
-enum Status {Empty, Player1 , Player2, Hover};
+enum Status {Empty, Player1 , Player2, Hover, Forecast};
 
 class Unit : public Rectangle{
     public:
@@ -49,6 +49,14 @@ class Unit : public Rectangle{
                 if (!P2Unit){ std::cout << "[Error] Could not load P2Unit" << std::endl; }
             #endif
             return P2Unit; 
+        };
+
+        static SDL_Surface* ForecastUnit() {
+            static SDL_Surface* ForecastUnit = IMG_Load("../assets/img/units/forecast_move.png");
+            #ifdef DEBUG
+                if (!ForecastUnit){ std::cout << "[Error] Could not load ForecastUnit" << std::endl; }
+            #endif
+            return ForecastUnit; 
         };
 
         static SDL_Surface* HoverUnit() {

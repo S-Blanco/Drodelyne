@@ -37,9 +37,14 @@ class Board {
         int mLastCol{0};
         int mLastRow{0};
 
-        bool IsMoveLegal(int col, int row);
+        bool IsMoveLegal(int row, int col);
+        void Forecaster(int CardID);
+        void ForecastResetter();
 
         Status mBoardState[mSize][mSize];
+        // bool mValidMoves[mSize][mSize];
+        Status mPlayerThisTurn;
+        Status mOpponent;
         Unit board[mSize][mSize];
         Image mEmptyBoard;
         int mMoveNbr{0};

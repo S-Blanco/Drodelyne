@@ -31,6 +31,7 @@ bool Unit::HasMoved(const SDL_MouseMotionEvent& E){
 void Unit::Render(SDL_Surface* Destination, bool* Moved){
     if      (mStatus==Player1) {SDL_BlitScaled(P1Unit(), nullptr, Destination, &Rect);}
     else if (mStatus==Player2) {SDL_BlitScaled(P2Unit(), nullptr, Destination, &Rect);}
+    else if (mStatus==Forecast) {SDL_BlitScaled(ForecastUnit(), nullptr, Destination, &Rect);}
     else if (mStatus==Hover) {
         SDL_BlitScaled(HoverUnit(), nullptr, Destination, &Rect);
         SDL_Event Hovered{Events::HOVER_EVENT};
