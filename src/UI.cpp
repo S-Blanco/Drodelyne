@@ -54,19 +54,24 @@ void UI::DrawCard(Card& spot){
 }
 void UI::HandleEvent(const SDL_Event& E){
     // card in preview spot was played
-    if (E.type == Events::CARD_PLAYED){
+    if(E.type == Events::UNIT_PLAYED){
+        mPreviewSpot.mIsActive = false;
+        mPreviewSpot.mIsShown = false;
+            mGraveyardPile[mCardIndex-1] = mPreviewSpot.mID; //-1 because the discard is one card late compared to the draw
         for (Card& spot : mCardSpots){
             if (spot.mIsEmpty){ DrawCard(spot); }
             spot.mIsEmpty = false;
             spot.mIsActive = true;
             spot.mIsShown = true;
         }
-    }
-    
-    if (E.type == SDL_MOUSEBUTTONDOWN){
+        SDL_Event CardPlayed{Events::CARD_PLAYED};
+        SDL_PushEvent(&CardPlayed);
+
+    } else if (E.type == SDL_MOUSEBUTTONDOWN){
         mClickedOnHand=false;
 
-        for (Card& spot : mCardSpots){ // Check if click on a card in the player's hand
+        // Check if click on a card in the player's hand
+        for (Card& spot : mCardSpots){ 
             if(spot.mIsActive 
             && !spot.mIsEmpty
             && IsWithinBounds(E.motion.x, E.motion.y, spot)){
@@ -84,32 +89,20 @@ void UI::HandleEvent(const SDL_Event& E){
                 break;
             }
         }
-        // Check if player clicked on the card in the preview spot
-        if (!mClickedOnHand && mPreviewSpot.mIsActive && IsWithinBounds(E.motion.x, E.motion.y, mPreviewSpot)){
-            if(E.button.button == SDL_BUTTON_RIGHT){
-                // cancel the use of the card with right click
-                mPreviewSpot.mIsActive = false;
-                mPreviewSpot.mIsShown = false;
-                for (Card& Card : mCardSpots){
-                    Card.mIsActive = true;
-                    Card.mIsShown  = true;
-                    Card.mIsEmpty  = false;
-                }
-                SDL_Event CardUnselected{Events::CARD_UNSELECTED};
-                SDL_PushEvent(&CardUnselected);
-            }else if (E.button.button == SDL_BUTTON_LEFT){
-                // Left click confirm player wants to use the card in the preview spot
-                // sends event PLAYED_CARD and next turn, we draw a new one.
-                mPreviewSpot.mIsActive = false;
-                mPreviewSpot.mIsShown = false;
-                    mGraveyardPile[mCardIndex-1] = mPreviewSpot.mID; //-1 because the discard is one card later compared to the draw
-                // TODO : Merge the 2 events.
-                // Since there can only have a unit played when a card is played, one of
-                // the 2 events generated (here and in Unit.HandleMouseClick) will disappear
-                SDL_Event CardPlayed{Events::CARD_PLAYED};
-                SDL_PushEvent(&CardPlayed);
+        // Check if player clicked on the card in the preview spot to cancel its use
+        if (E.button.button == SDL_BUTTON_RIGHT
+        &&  !mClickedOnHand
+        &&  mPreviewSpot.mIsActive
+        &&  IsWithinBounds(E.motion.x, E.motion.y, mPreviewSpot)){
+            mPreviewSpot.mIsActive = false;
+            mPreviewSpot.mIsShown = false;
+            for (Card& Card : mCardSpots){
+                Card.mIsActive = true;
+                Card.mIsShown  = true;
+                Card.mIsEmpty  = false;
             }
-            
+            SDL_Event CardUnselected{Events::CARD_UNSELECTED};
+            SDL_PushEvent(&CardUnselected);
         }
     }
     

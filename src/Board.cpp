@@ -33,7 +33,7 @@ void Board::HandleEvent(const SDL_Event& E){
     int MouseRow;
     switch (E.type)
     {
-    case SDL_MOUSEMOTION:
+    case SDL_MOUSEMOTION: //only used for hover? if so, not needed anymore?
         mHasMoved = true;
         MouseCol = (E.motion.x - Config::MOUSE_X_SHIFT - mUpperX) / mCellWidth; 
         MouseRow = (E.motion.y - Config::MOUSE_Y_SHIFT - mUpperY) / mCellHeight;
@@ -44,12 +44,15 @@ void Board::HandleEvent(const SDL_Event& E){
         }
         break;
     case SDL_MOUSEBUTTONDOWN:
-        MouseCol = (E.motion.x - mUpperX) / mCellWidth;
-        MouseRow = (E.motion.y - mUpperY) / mCellHeight;
-        if(IsMoveLegal(MouseRow, MouseCol)){
-            if (IsIntersectionValid(MouseRow, MouseCol)){
-                board[MouseRow][MouseCol].HandleMouseClick(E.button, mMoveNbr);
-            };
+        if (E.button.button == SDL_BUTTON_LEFT){
+            MouseCol = (E.motion.x - mUpperX) / mCellWidth;
+            MouseRow = (E.motion.y - mUpperY) / mCellHeight;
+            
+            if(IsMoveLegal(MouseRow, MouseCol)){ // check that mouse is within bounds
+                if (mBoardState[MouseRow][MouseCol] == Forecast){
+                    board[MouseRow][MouseCol].HandleMouseClick(E.button, mMoveNbr);
+                };
+            }
         }
         break;
     default:
@@ -62,13 +65,14 @@ void Board::HandleEvent(const SDL_Event& E){
             // check player of previous move and fill the board with their unit
                 (mMoveNbr-1)%2==0 ? mBoardState[E.motion.y][E.motion.x]=Player1
                             : mBoardState[E.motion.y][E.motion.x]=Player2;
-                
                 Status temp = mPlayerThisTurn;
                 mPlayerThisTurn = mOpponent;
                 mOpponent = temp;
+                ForecastResetter();
+
         }else if (E.type==Events::CARD_SELECTED){
         Forecaster(E.button.button);
-        }else if(E.type == Events::CARD_UNSELECTED || E.type == Events::CARD_PLAYED){
+        }else if(E.type == Events::CARD_UNSELECTED){
             ForecastResetter();
         }
     }
@@ -138,7 +142,7 @@ void Board::Forecaster(int CardID){
                 }
             }
         }
-    }else if(CardID == 1){ // bigKnight
+    } else if(CardID == 1){ // bigKnight
         for (int i = 0; i < mSize; ++i){
             for (int j = 0; j < mSize; ++j){
                 if(mBoardState[i][j] == mPlayerThisTurn){
@@ -222,7 +226,7 @@ void Board::Forecaster(int CardID){
                 }
             }
         }
-    }else if(CardID == 5){ // free
+    } else if(CardID == 5){ // free
         for (int i = 0; i < mSize; ++i){
             for (int j = 0; j < mSize; ++j){
                 if (IsMoveLegal(i,j)){

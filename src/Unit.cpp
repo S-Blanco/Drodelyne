@@ -55,14 +55,10 @@ void Unit::HandleMouseMotion(const SDL_MouseMotionEvent& E){
 }
 
 void Unit::HandleMouseClick(const SDL_MouseButtonEvent& E, int& MoveNbr){
-    if(mStatus == Empty || mStatus == Hover){
-        SDL_Event UnitPlayed{Events::UNIT_PLAYED};
-        UnitPlayed.motion.x = mCol;
-        UnitPlayed.motion.y = mRow;
-        SDL_PushEvent(&UnitPlayed);
-        (MoveNbr%2==0)? mStatus = Player1 : mStatus = Player2;
-        ++MoveNbr;
-    }else{
-        mStatus = Empty;
-    }
+    SDL_Event UnitPlayed{Events::UNIT_PLAYED};
+    UnitPlayed.motion.x = mCol;
+    UnitPlayed.motion.y = mRow;
+    SDL_PushEvent(&UnitPlayed);
+    (MoveNbr%2==0)? mStatus = Player1 : mStatus = Player2;
+    ++MoveNbr;
 }
