@@ -12,6 +12,12 @@ namespace Config{
     
 }
 
+namespace GameSetting{
+    const int HandSize = 4;
+    const int DeckSize = 10;
+    const int DrawingSize = DeckSize - HandSize +1;
+}
+
 // namespace Colors{
 //     // https://paletton.com/#uid=53y0k0kMHXunrVSudX5WGF0UArj
 //     SDL_Color Primary[5]{{76,166,241},{29,147,244},{7,137,245},{2,106,193},{2,78,140}};

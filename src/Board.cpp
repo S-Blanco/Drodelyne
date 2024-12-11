@@ -117,8 +117,11 @@ bool Board::IsMoveLegal(int row, int col){
 /*
  * Forecast which zone of the board will be playable with the selected card
 */
-void Board::Forecaster(int CardID){
+void Board::Forecaster(int CardID, bool WasSacrificed){
     // TODO : Use correct values of cardID once we are assured that the system works
+    if (WasSacrificed){
+        CardID = 5; // fall back to free placement
+    }
     if (CardID == 0){ //bigJump
         for (int i = 0; i < mSize; ++i){
             for (int j = 0; j < mSize; ++j){

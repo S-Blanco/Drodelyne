@@ -33,16 +33,18 @@ class Board {
         int mEdgeWidth{5};
         static const int mSize{19};
         bool mHasMoved{true};
-        
+
         int mLastCol{0};
         int mLastRow{0};
 
         bool IsMoveLegal(int row, int col);
-        void Forecaster(int CardID);
+        void Forecaster(int CardID, bool WasSacrificed=false);
         void ForecastResetter();
 
         Status mBoardState[mSize][mSize];
-        // bool mValidMoves[mSize][mSize];
+        
+        Status mBoardForecast[GameSetting::HandSize][mSize][mSize];
+        
         Status mPlayerThisTurn;
         Status mOpponent;
         Unit board[mSize][mSize];
