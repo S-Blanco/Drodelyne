@@ -32,7 +32,6 @@ class Unit : public Rectangle{
         bool HasMoved(const SDL_MouseMotionEvent& E);
 
     private:
-        bool mIsForbidden {false}; // Disabled if player cannot play there (ko, suicide)
         int mCol{0}; // Column number in the goban's 2D array 
         int mRow{0}; // Row number in the goban's 2D array 
         

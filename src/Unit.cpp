@@ -11,8 +11,6 @@ Unit::Unit(int x, int y, int Row, int Col):
 
 void Unit::HandleEvent(const SDL_Event& E, int& MoveNbr){
     
-    if (mIsForbidden){ return;}
-    
     if (E.type == SDL_MOUSEMOTION){ HandleMouseMotion(E.motion); }
     if (E.type == SDL_MOUSEBUTTONDOWN) {HandleMouseClick(E.button, MoveNbr);}
     if (E.type == Events::HOVER_EVENT){mStatus=Empty;}
