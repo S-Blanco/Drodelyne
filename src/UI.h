@@ -15,6 +15,7 @@
 #include "Card.h"
 #include "Events.h"
 #include "Player.h"
+#include "Scene.h"
 
 /*
  * Handles the deck, the player's hand and the preview spot
@@ -22,6 +23,7 @@
 */
 class UI {
     public:
+        UI()=default;
         UI(std::array<std::string, 10> Player1DeckFile, std::array<int, 10> Player1DeckID,
            std::array<std::string, 10> Player2DeckFile, std::array<int, 10> Player2DeckID);
         

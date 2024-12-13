@@ -83,8 +83,13 @@ void UI::HandleEvent(const SDL_Event& E, Player* Player){
             spot.mIsActive = true;
             spot.mIsShown = true;
         }
+        SDL_Event ChangeScreen{Events::CHANGE_SCENE};
+        mCurrentMove%2==0 ? ChangeScreen.motion.which = P2_TRANSITION
+                          : ChangeScreen.motion.which = P1_TRANSITION;
+        SDL_PushEvent(&ChangeScreen);
         ++mCurrentMove;
         mCurrentPlayer = &mPlayers[mCurrentMove%2];
+        
     } else if (E.type == SDL_MOUSEBUTTONDOWN){
         mClickedOnHand=false;
 

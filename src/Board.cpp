@@ -6,6 +6,8 @@
 #endif
 
 
+Board::Board():mPlayerThisTurn{Player1},mOpponent{Player2}{}
+
 Board::Board(int UpperX, int UpperY, int ImgWidth, int ImgHeight)
     :mUpperX{UpperX}, mUpperY{UpperY}, mPlayerThisTurn{Player1},mOpponent{Player2},
     mEmptyBoard("../assets/img/board/03_board.png",

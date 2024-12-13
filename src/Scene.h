@@ -1,0 +1,3 @@
+#pragma once
+
+enum Scenes{ START, P1_GAME, P1_TRANSITION, P2_GAME, P2_TRANSITION};

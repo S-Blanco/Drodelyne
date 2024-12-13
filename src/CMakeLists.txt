@@ -8,7 +8,6 @@ add_executable(Game
                Button.cpp
                Card.cpp
                Events.cpp
-               #Game.cpp
                Image.cpp
                main.cpp
                Orchestra.cpp

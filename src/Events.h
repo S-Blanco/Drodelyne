@@ -9,5 +9,13 @@ namespace Events{
     extern const Uint32 CARD_SELECTED;   // player selected a card to view the effect on the board
     extern const Uint32 CARD_UNSELECTED; // player unselected a card, back to showing the hand
     extern const Uint32 CARD_PLAYED;     // player confirmed the use of a card to play a move
+
+    extern const Uint32 CHANGE_SCENE;
+
+    extern const Uint32 TO_STARTMENU;
+    extern const Uint32 TO_P1SCREEN;
+    extern const Uint32 TO_P1TRANSITION;
+    extern const Uint32 TO_P2SCREEN;
+    extern const Uint32 TO_P2TRANSITION;
 }
  

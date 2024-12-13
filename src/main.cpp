@@ -26,8 +26,7 @@
 #include "Unit.h"
 #include "Board.h"
 #include "Orchestra.h"
-
-
+#include "Scene.h"
 
 int main(int argc, char** argv) {
 
@@ -49,8 +48,17 @@ int main(int argc, char** argv) {
         return -1;
     }
 
+    
+    
+    
+    
+    int SceneIndex{0};
 
-    Orchestra Conductor("../assets/sounds/background.wav",
+    Image StartScreen{"../assets/img/screens/start.png"};
+    Image Player1Waiting{"../assets/img/screens/P1_turn.png"};
+    Image Player2Waiting{"../assets/img/screens/P2_turn.png"};
+
+    Orchestra Conductor("../assets/sounds/abackground.wav",
                         "../assets/sounds/validPlay.wav",
                         "../assets/sounds/invalidPlay.wav");
     Conductor.PlayMusic();
@@ -64,67 +72,103 @@ int main(int argc, char** argv) {
     int YStart = (DM.h - EmptyBoardHeight)/2;
     Window GameWindow(DM.w, DM.h);
 
-    std::array<std::string,10> PlayerDeckFile{ // TODO : Use proper storage of deck
-        "../assets/img/cards/player1/bigJump.png",
-        "../assets/img/cards/player1/bigKnight.png",
-        "../assets/img/cards/player1/center.png",
-        "../assets/img/cards/player1/corner.png",
-        "../assets/img/cards/player1/diagonal.png",
-        "../assets/img/cards/player1/free.png",
-        "../assets/img/cards/player1/jump.png",
-        "../assets/img/cards/player1/knight.png",
-        "../assets/img/cards/player1/neighbour.png",
-        "../assets/img/cards/player1/side.png"
-    };
 
-    // std::array<std::string,10> PlayerDeckFile{ 
-    //     "../assets/img/cards/card_p1_front0.png",
-    //     "../assets/img/cards/card_p1_front1.png",
-    //     "../assets/img/cards/card_p1_front2.png",
-    //     "../assets/img/cards/card_p1_front3.png",
-    //     "../assets/img/cards/card_p1_front4.png",
-    //     "../assets/img/cards/card_p1_front5.png",
-    //     "../assets/img/cards/card_p1_front6.png",
-    //     "../assets/img/cards/card_p1_front7.png",
-    //     "../assets/img/cards/card_p1_front8.png",
-    //     "../assets/img/cards/card_p1_front9.png"
-    // };
-    std::array<int,10> PlayerDeckID{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+    #include "Deck.h"
 
-
-    UI GameUI(PlayerDeckFile, PlayerDeckID);
+    // Game CurrentGame;
+    UI GameUI(Player1DeckFile, Player1DeckID,
+              Player2DeckFile, Player2DeckID);
     Board Arena{XStart, YStart, EmptyBoardWidth, EmptyBoardHeight};
     
     SDL_Event Event;
     bool shouldQuit{false};
 
-    #ifdef DEBUG
-        int i{0};
-    #endif
+    std::vector<int> Triggers{SDLK_ESCAPE, SDLK_SPACE, SDLK_KP_ENTER};
+    std::vector<int> Links{START, P1_GAME, P1_TRANSITION};
 
     while (!shouldQuit) {
-        #ifdef DEBUG
-            ++i;
-        #endif
         Uint32 frameStart = SDL_GetTicks();
-        
 
         while(SDL_PollEvent(&Event)){
             if (Event.type == SDL_QUIT) [[unlikely]]{ shouldQuit=true; }
-            if (Event.type == Events::UNIT_PLAYED){
-                Conductor.HandleEvent(Event);   // Play sound
-                Arena.HandleEvent(Event);       // Change board state
-            }else{
-                GameUI.HandleEvent(Event);
-                Arena.HandleEvent(Event);
+            if (Event.type == Events::CHANGE_SCENE){
+                std::cout << std::format("Change the scene index") << std::endl;
+                SceneIndex = Event.motion.which;
+                }
+            
+            // Dispatch events only to current scene
+            if (SceneIndex == START){
+                if(Event.key.keysym.sym == SDLK_ESCAPE){
+                    SDL_Event Quit{SDL_QUIT};
+                    SDL_PushEvent(&Quit);
+                } else{
+                    for (int i=0; i<Triggers.size(); ++i){
+                        if (Event.key.keysym.sym == Triggers[i]){
+                            std::cout << std::format("Must change to scene: {}", Links[i]) << std::endl;
+                            SDL_Event ChangeScene{Events::CHANGE_SCENE};
+                            ChangeScene.motion.which = Links[i];
+                            SDL_PushEvent(&ChangeScene);
+                        }
+                    }
+                }
+                
+            } else if (SceneIndex == P1_GAME){
+                if (Event.type == Events::UNIT_PLAYED){
+                    Conductor.HandleEvent(Event);   // Play sound
+                    Arena.HandleEvent(Event);       // Change board state
+                    GameUI.HandleEvent(Event);      // Draw new card
+                }else{
+                    GameUI.HandleEvent(Event);
+                    Arena.HandleEvent(Event);
+                }
+            } else if (SceneIndex == P1_TRANSITION){
+                if (Event.key.keysym.sym == SDLK_SPACE){
+                        SDL_Event ChangeScene{Events::CHANGE_SCENE};
+                        ChangeScene.motion.which = P2_GAME;
+                        SDL_PushEvent(&ChangeScene);
+                }
+
+            } else if (SceneIndex == P2_GAME){
+                if (Event.type == Events::UNIT_PLAYED){
+                    Conductor.HandleEvent(Event);   // Play sound
+                    Arena.HandleEvent(Event);       // Change board state
+                    GameUI.HandleEvent(Event);      // Draw new card
+                }else{
+                    GameUI.HandleEvent(Event);
+                    Arena.HandleEvent(Event);
+                }
+
+            } else if (SceneIndex == P2_TRANSITION){
+                if (Event.key.keysym.sym == SDLK_SPACE){
+                        SDL_Event ChangeScene{Events::CHANGE_SCENE};
+                        ChangeScene.motion.which = P2_GAME;
+                        SDL_PushEvent(&ChangeScene);
+                }
+
             }
         }
-        Arena.CheckHover();
+        Arena.CheckHover(); // useless now?
 
 
         GameWindow.Render();
-        GameUI.Render(GameWindow.GetSurface());
-        Arena.Render(GameWindow.GetSurface());
+        // Dispatch events only to current scene
+        if (SceneIndex == START){
+            StartScreen.Render(GameWindow.GetSurface());
+        } else if (SceneIndex == P1_GAME){
+            GameUI.Render(GameWindow.GetSurface());
+            Arena.Render(GameWindow.GetSurface());
+
+
+        } else if (SceneIndex == P1_TRANSITION){
+            Player1Waiting.Render(GameWindow.GetSurface());
+            Arena.Render(GameWindow.GetSurface());
+        } else if (SceneIndex == P2_GAME){
+            GameUI.Render(GameWindow.GetSurface());
+            Arena.Render(GameWindow.GetSurface());
+        } else if (SceneIndex == P2_TRANSITION){
+            Player2Waiting.Render(GameWindow.GetSurface());
+            Arena.Render(GameWindow.GetSurface());
+        }
         GameWindow.Update();
     }
     Mix_Quit();
