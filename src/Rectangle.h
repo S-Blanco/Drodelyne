@@ -13,6 +13,11 @@ class Rectangle{
 
         virtual void Render(SDL_Surface* Surface);
         virtual void HandleEvent(const SDL_Event& E){}
+
+        const int GetLeftX(){return Rect.x;}
+        const int GetTopY(){return Rect.y;}
+        const int GetRightX(){return Rect.x + Rect.w;}
+        const int GetBottomY(){return Rect.y + Rect.h;}
         
     protected:
         SDL_Rect    Rect   {0, 0, 0, 0};

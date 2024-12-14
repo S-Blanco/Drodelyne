@@ -1,14 +1,27 @@
 #include "UI.h"
 #include "Layout.h" // included here because when included in UI.h, multiple include error even with pragma once?
 
-UI::UI(std::array<std::string, mDeckSize> Player1DeckFile, std::array<int, 10> Player1DeckID,
-       std::array<std::string, mDeckSize> Player2DeckFile, std::array<int, 10> Player2DeckID)
+UI::UI(std::string Name1, std::array<std::string, mDeckSize> Player1DeckFile, std::array<int, 10> Player1DeckID,
+       std::string Name2, std::array<std::string, mDeckSize> Player2DeckFile, std::array<int, 10> Player2DeckID)
     {
-        mPlayers[0] = Player(Player1DeckFile, Player1DeckID);
-        mPlayers[1] = Player(Player2DeckFile, Player2DeckID);
+
+        
+        mPlayers[0] = Player(Name1, Player1DeckFile, Player1DeckID);
+        mPlayers[1] = Player(Name2, Player2DeckFile, Player2DeckID);
         mCurrentPlayer = &mPlayers[0];
         SetupHand(&mPlayers[0]);
         SetupHand(&mPlayers[1]);
+
+        mDiscard.mIsActive = false;
+        mDiscard.mIsVisible = false;
+
+        mCancel.mIsActive = false;
+        mCancel.mIsVisible = false;
+
+        Write.SetFontSize(56);
+        Write.mContent = std::format("{} : {}", mCurrentPlayer->mName, mCurrentPlayer->mObligation);
+
+
     }
     
 void UI::SetupHand(Player* Player){
@@ -52,7 +65,6 @@ void UI::SwapGraveyardAndShuffle(Player* Player){
     return ;
 }
 
-
 void UI::DrawCard(Card& spot){
     DrawCard(spot, mCurrentPlayer);
 }
@@ -68,14 +80,18 @@ void UI::DrawCard(Card& spot, Player* Player){
     
 }
 
-void UI::HandleEvent(const SDL_Event& E){
-    HandleEvent(E, mCurrentPlayer);
-}
+void UI::HandleEvent(const SDL_Event& E){ HandleEvent(E, mCurrentPlayer); }
 void UI::HandleEvent(const SDL_Event& E, Player* Player){
+    
+    
     // card in preview spot was played
     if(E.type == Events::UNIT_PLAYED){
         Player->mPreviewSpot.mIsActive = false;
         Player->mPreviewSpot.mIsShown = false;
+        mDiscard.mIsActive = false;
+        mDiscard.mIsVisible = false;
+        mCancel.mIsActive = false;
+        mCancel.mIsVisible = false;
             Player->mGraveyardPile[Player->mCardIndex-1] = Player->mPreviewSpot.mID; //-1 because the discard is one card late compared to the draw
         for (Card& spot : Player->mCardSpots){
             if (spot.mIsEmpty){ DrawCard(spot, Player); }
@@ -93,6 +109,33 @@ void UI::HandleEvent(const SDL_Event& E, Player* Player){
     } else if (E.type == SDL_MOUSEBUTTONDOWN){
         mClickedOnHand=false;
 
+        if (mDiscard.mIsActive && IsWithinBounds(E.motion.x, E.motion.y, mDiscard)){
+            SDL_Event CardSelected{Events::CARD_SELECTED};
+            CardSelected.button.button = 5; // ID of free placement, TODO : put enum instead
+            SDL_PushEvent(&CardSelected);
+                
+            Player->mObligation -= 5 ;
+            mDiscard.mIsActive = false;
+
+        }
+        if (mCancel.mIsActive && IsWithinBounds(E.motion.x, E.motion.y, mCancel)){
+
+            Player->mPreviewSpot.mIsActive = false;
+            Player->mPreviewSpot.mIsShown = false;
+            for (Card& Card : Player->mCardSpots){
+                Card.mIsActive = true;
+                Card.mIsShown  = true;
+                Card.mIsEmpty  = false;
+            }
+            SDL_Event CardUnselected{Events::CARD_UNSELECTED};
+            SDL_PushEvent(&CardUnselected);
+
+            // this will move since it is the clicking of the button that trigger the visibility/activity
+            mDiscard.mIsActive = false;
+            mDiscard.mIsVisible = false;
+            mCancel.mIsActive = false;
+            mCancel.mIsVisible = false;
+        }
         // Check if click on a card in the player's hand
         for (Card& spot : Player->mCardSpots){ 
             if(spot.mIsActive 
@@ -109,10 +152,16 @@ void UI::HandleEvent(const SDL_Event& E, Player* Player){
                 SDL_Event CardSelected{Events::CARD_SELECTED};
                 CardSelected.button.button = spot.mID;
                 SDL_PushEvent(&CardSelected);
+                
+                mDiscard.mIsActive = true;
+                mDiscard.mIsVisible = true;
+                mCancel.mIsActive = true;
+                mCancel.mIsVisible = true;
+                
                 break;
             }
         }
-        // Check if player clicked on the card in the preview spot to cancel its use
+        // Check if player clicked on the card in the preview spot to mCancel its use
         if (E.button.button == SDL_BUTTON_RIGHT
         &&  !mClickedOnHand
         &&  Player->mPreviewSpot.mIsActive
@@ -126,32 +175,28 @@ void UI::HandleEvent(const SDL_Event& E, Player* Player){
             }
             SDL_Event CardUnselected{Events::CARD_UNSELECTED};
             SDL_PushEvent(&CardUnselected);
-        }
-        // Placeholder sacrifice mechanism. Will be replaced by "drag card to graveyard"
-        if (E.button.button == SDL_BUTTON_LEFT
-        &&  !mClickedOnHand
-        &&  Player->mPreviewSpot.mIsActive
-        &&  IsWithinBounds(E.motion.x, E.motion.y, Player->mPreviewSpot)){
-            ;
-            // if mP Player1Obligation -=5;
-            std::cout << std::format("Sacrificed, new debt total: {}", Player->mObligation) << std::endl;
-            // Set was_sacrificed=true in the card
-            // Add 5 points to Player1Obligation
-            // Act as if the last card was Free placement
+
+            // this will move since it is the clicking of the button that trigger the visibility/activity
+            mDiscard.mIsActive = false;
+            mDiscard.mIsVisible = false;
+            mCancel.mIsActive = false;
+            mCancel.mIsVisible = false;
         }
     }
     
 }
 
-bool UI::IsWithinBounds(int x, int y, Card& Card){
-    return !(   x < Card.GetLeftX()
-             || x > Card.GetRightX()
-             || y < Card.GetTopY()
-             || y > Card.GetBottomY());
+bool UI::IsWithinBounds(int x, int y, Button& Button){
+    return !(   x < Button.GetLeftX()
+             || x > Button.GetRightX()
+             || y < Button.GetTopY()
+             || y > Button.GetBottomY());
 }
 
 void UI::Render(SDL_Surface* Surface){
     Render(Surface, mCurrentPlayer);
+    mDiscard.Render(Surface);
+    mCancel.Render(Surface);
 }
 
 void UI::Render(SDL_Surface* Surface, Player* Player){
@@ -160,4 +205,9 @@ void UI::Render(SDL_Surface* Surface, Player* Player){
     }
     Player->mDeckSpot.Render(Surface);
     Player->mPreviewSpot.Render(Surface);
+    
+    // Move that elsewhere?
+    Write.mContent = std::format("{} :\n{}", mCurrentPlayer->mName, mCurrentPlayer->mObligation);
+    Write.Render(Surface);
+
 }

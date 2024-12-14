@@ -20,11 +20,6 @@ class Card: public Button{
         int SetImage(std::string File);
         SDL_Surface* getImage()const {return mFullImage;};
 
-        const int GetLeftX(){return mRectPosition.x;}
-        const int GetTopY(){return mRectPosition.y;}
-        const int GetRightX(){return mRectPosition.x + mRectPosition.w;}
-        const int GetBottomY(){return mRectPosition.y + mRectPosition.h;}
-        
         int mID;
 
 

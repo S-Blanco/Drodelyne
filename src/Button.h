@@ -10,6 +10,7 @@ class Button: public Rectangle{
         Button(int x, int y, int w, int h, SDL_Color Color = {0,255,0,255});
         void HandleEvent(const SDL_Event& E);
         bool mIsActive {true};
+        bool mIsVisible {true};
 
     protected:
         void ResizeButton(int x, int y, int w, int h);

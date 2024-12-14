@@ -13,6 +13,7 @@ add_executable(Game
                Orchestra.cpp
                Player.cpp
                Rectangle.cpp
+               Text.cpp
                UI.cpp
                Unit.cpp
                Window.cpp

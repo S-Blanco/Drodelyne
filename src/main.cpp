@@ -27,6 +27,7 @@
 #include "Board.h"
 #include "Orchestra.h"
 #include "Scene.h"
+#include "Text.h"
 
 int main(int argc, char** argv) {
 
@@ -49,16 +50,13 @@ int main(int argc, char** argv) {
     }
 
     
-    
-    
-    
-    int SceneIndex{0};
+    int SceneIndex{1};
 
     Image StartScreen{"../assets/img/screens/start.png"};
     Image Player1Waiting{"../assets/img/screens/P1_turn.png"};
     Image Player2Waiting{"../assets/img/screens/P2_turn.png"};
 
-    Orchestra Conductor("../assets/sounds/abackground.wav",
+    Orchestra Conductor("../assets/sounds/background.wav",
                         "../assets/sounds/validPlay.wav",
                         "../assets/sounds/invalidPlay.wav");
     Conductor.PlayMusic();
@@ -72,12 +70,12 @@ int main(int argc, char** argv) {
     int YStart = (DM.h - EmptyBoardHeight)/2;
     Window GameWindow(DM.w, DM.h);
 
-
+    
     #include "Deck.h"
 
     // Game CurrentGame;
-    UI GameUI(Player1DeckFile, Player1DeckID,
-              Player2DeckFile, Player2DeckID);
+    UI GameUI("Alice", Player1DeckFile, Player1DeckID,
+              "Bob", Player2DeckFile, Player2DeckID);
     Board Arena{XStart, YStart, EmptyBoardWidth, EmptyBoardHeight};
     
     SDL_Event Event;
@@ -95,20 +93,21 @@ int main(int argc, char** argv) {
                 std::cout << std::format("Change the scene index") << std::endl;
                 SceneIndex = Event.motion.which;
                 }
+
+            if(Event.key.keysym.sym == SDLK_ESCAPE){
+                    SDL_Event Quit{SDL_QUIT};
+                    SDL_PushEvent(&Quit);
+                }
             
             // Dispatch events only to current scene
             if (SceneIndex == START){
-                if(Event.key.keysym.sym == SDLK_ESCAPE){
-                    SDL_Event Quit{SDL_QUIT};
-                    SDL_PushEvent(&Quit);
-                } else{
-                    for (int i=0; i<Triggers.size(); ++i){
-                        if (Event.key.keysym.sym == Triggers[i]){
-                            std::cout << std::format("Must change to scene: {}", Links[i]) << std::endl;
-                            SDL_Event ChangeScene{Events::CHANGE_SCENE};
-                            ChangeScene.motion.which = Links[i];
-                            SDL_PushEvent(&ChangeScene);
-                        }
+                
+                for (int i=0; i<Triggers.size(); ++i){
+                    if (Event.key.keysym.sym == Triggers[i]){
+                        std::cout << std::format("Must change to scene: {}", Links[i]) << std::endl;
+                        SDL_Event ChangeScene{Events::CHANGE_SCENE};
+                        ChangeScene.motion.which = Links[i];
+                        SDL_PushEvent(&ChangeScene);
                     }
                 }
                 

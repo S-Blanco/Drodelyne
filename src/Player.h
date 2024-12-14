@@ -10,13 +10,15 @@ class Player{
 
     public:
         Player()=default;
+        Player(std::string Name, std::array<std::string, GameSetting::DeckSize> DeckFile,
+               std::array<int, GameSetting::DeckSize> DeckID);
         Player(std::array<std::string, GameSetting::DeckSize> DeckFile,
                std::array<int, GameSetting::DeckSize> DeckID);
 
         std::array<std::string, GameSetting::DeckSize> mDeckFile;
         std::array<int, GameSetting::DeckSize> mDeckID;
         
-        
+        std::string mName;
         Card mCardSpots[GameSetting::HandSize];
         Card mDeckSpot; // TODO : Create a class for deck that shows how many cards remain
         Card mPreviewSpot;
