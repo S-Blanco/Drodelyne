@@ -64,7 +64,7 @@ void UI::SwapGraveyardAndShuffle(Player* Player){
     std::shuffle(Player->mShufflePile.begin(), Player->mShufflePile.end(), std::default_random_engine(0));
     return ;
 }
-
+    
 void UI::DrawCard(Card& spot){
     DrawCard(spot, mCurrentPlayer);
 }

@@ -40,7 +40,7 @@ void Text::Render(SDL_Surface* DestSurface){
     SDL_Surface* TextSurface{TTF_RenderUTF8_Blended_Wrapped(mFont,
                                                             mContent.c_str(),
                                                             SDL_Color{255,255,255},
-                                                            200)};
+                                                            mWrapSize)};
     
     if(!TextSurface){
         std::cout << "Error generating the text : " << SDL_GetError() << std::endl;

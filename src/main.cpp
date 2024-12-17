@@ -77,6 +77,23 @@ int main(int argc, char** argv) {
     UI GameUI("Alice", Player1DeckFile, Player1DeckID,
               "Bob", Player2DeckFile, Player2DeckID);
     Board Arena{XStart, YStart, EmptyBoardWidth, EmptyBoardHeight};
+
+    Text TextWaitP1Turn{"It is Blue turn!\nPress space to start your turn"};
+    TextWaitP1Turn.SetFontSize(56);
+    TextWaitP1Turn.mWrapSize = 350;
+    TextWaitP1Turn.mDestRectangle.x = 930;
+    TextWaitP1Turn.mDestRectangle.y = 150;
+    TextWaitP1Turn.mDestRectangle.w = 500;
+    TextWaitP1Turn.mDestRectangle.h = 800;
+    Text TextWaitP2Turn{"It is Red turn!\nPress space to start your turn"};
+    TextWaitP2Turn.SetFontSize(56);
+    TextWaitP2Turn.mDestRectangle.x = 930;
+    TextWaitP2Turn.mDestRectangle.y = 150;
+    TextWaitP2Turn.mDestRectangle.w = 500;
+    TextWaitP2Turn.mDestRectangle.h = 800;
+    TextWaitP2Turn.mWrapSize = 350;
+    
+    
     
     SDL_Event Event;
     bool shouldQuit{false};
@@ -156,16 +173,16 @@ int main(int argc, char** argv) {
         } else if (SceneIndex == P1_GAME){
             GameUI.Render(GameWindow.GetSurface());
             Arena.Render(GameWindow.GetSurface());
-
-
         } else if (SceneIndex == P1_TRANSITION){
             Player1Waiting.Render(GameWindow.GetSurface());
+            TextWaitP1Turn.Render(GameWindow.GetSurface());
             Arena.Render(GameWindow.GetSurface());
         } else if (SceneIndex == P2_GAME){
             GameUI.Render(GameWindow.GetSurface());
             Arena.Render(GameWindow.GetSurface());
         } else if (SceneIndex == P2_TRANSITION){
             Player2Waiting.Render(GameWindow.GetSurface());
+            TextWaitP2Turn.Render(GameWindow.GetSurface());
             Arena.Render(GameWindow.GetSurface());
         }
         GameWindow.Update();
