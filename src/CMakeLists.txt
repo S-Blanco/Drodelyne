@@ -7,6 +7,7 @@ add_executable(Game
                Board.cpp               
                Button.cpp
                Card.cpp
+               DrawPile.cpp
                Events.cpp
                Image.cpp
                main.cpp

@@ -21,7 +21,6 @@ Text::~Text(){
     }   
 }
 
-
 void Text::CreateSurface(std::string Content){
     SDL_Surface* NewSurface = TTF_RenderUTF8_Blended(mFont, Content.c_str(), {255,255,255});
     if(NewSurface){

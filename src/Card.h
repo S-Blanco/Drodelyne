@@ -34,7 +34,7 @@ class Card: public Button{
         SDL_Rect mRectPosition;
         SDL_Surface* mFullImage{nullptr};
         SDL_Surface* mEmptyImage{nullptr};
-        std::string mEmptyFile{"../assets/img/cards/card_empty_p1.png"}; // TODO: make that dependant on the player
+        std::string mEmptyFile{"../assets/img/cards/card_empty_p1.png"};
         int LoadFile(std::string File, SDL_Surface*& Image);
 
 };

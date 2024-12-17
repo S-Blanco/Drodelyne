@@ -16,14 +16,17 @@ class Text{
         void Render(SDL_Surface* DestSurface);
         void SetFontSize(int NewSize){TTF_SetFontSize(mFont, NewSize);};
         std::string mContent;
+        void SetDestinationRectangle(const SDL_Rect& Rect);
+ 
         SDL_Rect mDestRectangle{50,100,200,200};
+        
         int mWrapSize{200};
         
     
     protected:
 
         Text(int FontSize);
-    
+
         TTF_Font* mFont;
         SDL_Surface* mTextSurface{nullptr};
 

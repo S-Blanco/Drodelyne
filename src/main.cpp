@@ -28,6 +28,7 @@
 #include "Orchestra.h"
 #include "Scene.h"
 #include "Text.h"
+#include "DrawPile.h"
 
 int main(int argc, char** argv) {
 
@@ -73,7 +74,6 @@ int main(int argc, char** argv) {
     
     #include "Deck.h"
 
-    // Game CurrentGame;
     UI GameUI("Alice", Player1DeckFile, Player1DeckID, "../assets/img/cards/card_p1.png",
               "Bob", Player2DeckFile, Player2DeckID,"../assets/img/cards/card_p2.png");
     Board Arena{XStart, YStart, EmptyBoardWidth, EmptyBoardHeight};

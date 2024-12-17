@@ -4,6 +4,7 @@
 #include <string>
 
 #include "Card.h"
+#include "DrawPile.h"
 #include "Global.h"
 
 class Player{
@@ -23,7 +24,7 @@ class Player{
         
         std::string mName;
         Card mCardSpots[GameSetting::HandSize];
-        Card mDeckSpot; // TODO : Create a class for deck that shows how many cards remain
+        DrawPile mDeckSpot;
         Card mPreviewSpot;
 
         int mCardIndex{0}; // index of the current card to be drawn
