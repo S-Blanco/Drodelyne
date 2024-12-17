@@ -74,8 +74,8 @@ int main(int argc, char** argv) {
     #include "Deck.h"
 
     // Game CurrentGame;
-    UI GameUI("Alice", Player1DeckFile, Player1DeckID,
-              "Bob", Player2DeckFile, Player2DeckID);
+    UI GameUI("Alice", Player1DeckFile, Player1DeckID, "../assets/img/cards/card_p1.png",
+              "Bob", Player2DeckFile, Player2DeckID,"../assets/img/cards/card_p2.png");
     Board Arena{XStart, YStart, EmptyBoardWidth, EmptyBoardHeight};
 
     Text TextWaitP1Turn{"It is Blue turn!\nPress space to start your turn"};
@@ -170,21 +170,26 @@ int main(int argc, char** argv) {
         // Dispatch events only to current scene
         if (SceneIndex == START){
             StartScreen.Render(GameWindow.GetSurface());
+        
         } else if (SceneIndex == P1_GAME){
             GameUI.Render(GameWindow.GetSurface());
             Arena.Render(GameWindow.GetSurface());
+        
         } else if (SceneIndex == P1_TRANSITION){
             Player1Waiting.Render(GameWindow.GetSurface());
             TextWaitP1Turn.Render(GameWindow.GetSurface());
             Arena.Render(GameWindow.GetSurface());
+
         } else if (SceneIndex == P2_GAME){
             GameUI.Render(GameWindow.GetSurface());
             Arena.Render(GameWindow.GetSurface());
+
         } else if (SceneIndex == P2_TRANSITION){
             Player2Waiting.Render(GameWindow.GetSurface());
             TextWaitP2Turn.Render(GameWindow.GetSurface());
             Arena.Render(GameWindow.GetSurface());
         }
+
         GameWindow.Update();
     }
     Mix_Quit();

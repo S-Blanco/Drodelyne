@@ -10,13 +10,16 @@ class Player{
 
     public:
         Player()=default;
-        Player(std::string Name, std::array<std::string, GameSetting::DeckSize> DeckFile,
-               std::array<int, GameSetting::DeckSize> DeckID);
+        Player(std::string Name,
+               std::array<std::string, GameSetting::DeckSize> DeckFile,
+               std::array<int, GameSetting::DeckSize> DeckID,
+               std::string DrawingPileFile = "../assets/img/cards/card.png");
         Player(std::array<std::string, GameSetting::DeckSize> DeckFile,
                std::array<int, GameSetting::DeckSize> DeckID);
 
         std::array<std::string, GameSetting::DeckSize> mDeckFile;
         std::array<int, GameSetting::DeckSize> mDeckID;
+        std::string mDrawingPileFile;
         
         std::string mName;
         Card mCardSpots[GameSetting::HandSize];

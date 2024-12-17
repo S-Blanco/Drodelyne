@@ -1,13 +1,13 @@
 #include "UI.h"
 #include "Layout.h" // included here because when included in UI.h, multiple include error even with pragma once?
 
-UI::UI(std::string Name1, std::array<std::string, mDeckSize> Player1DeckFile, std::array<int, 10> Player1DeckID,
-       std::string Name2, std::array<std::string, mDeckSize> Player2DeckFile, std::array<int, 10> Player2DeckID)
+UI::UI(std::string Name1, std::array<std::string, mDeckSize> Player1DeckFile, std::array<int, 10> Player1DeckID, std::string P1DrawFile,
+       std::string Name2, std::array<std::string, mDeckSize> Player2DeckFile, std::array<int, 10> Player2DeckID, std::string P2DrawFile)
     {
 
         
-        mPlayers[0] = Player(Name1, Player1DeckFile, Player1DeckID);
-        mPlayers[1] = Player(Name2, Player2DeckFile, Player2DeckID);
+        mPlayers[0] = Player(Name1, Player1DeckFile, Player1DeckID, P1DrawFile);
+        mPlayers[1] = Player(Name2, Player2DeckFile, Player2DeckID, P2DrawFile);
         mCurrentPlayer = &mPlayers[0];
         SetupHand(&mPlayers[0]);
         SetupHand(&mPlayers[1]);
@@ -30,7 +30,7 @@ void UI::SetupHand(Player* Player){
         std::shuffle(Player->mDeckID.begin(), Player->mDeckID.end(),std::default_random_engine(0));
         {
         using namespace Layout;
-        Player->mDeckSpot = Card(TopDeckX, TopDeckY, CardWidth, -1, "../assets/img/cards/card_p1.png");
+        Player->mDeckSpot = Card(TopDeckX, TopDeckY, CardWidth, -1, Player->mDrawingPileFile);
         Player->mCardSpots[0] = Card(TopHandX, TopHandY, CardWidth, Player->mDeckID[Player->mCardIndex], Player->mDeckFile[Player->mDeckID[Player->mCardIndex]]);
         ++Player->mCardIndex; // TODO : Probably need some checking if card loading went wrong before increasing the index
         

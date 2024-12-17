@@ -26,8 +26,8 @@
 class UI {
     public:
         UI()=default;
-        UI(std::string Name1, std::array<std::string, 10> Player1DeckFile, std::array<int, 10> Player1DeckID,
-           std::string Name2, std::array<std::string, 10> Player2DeckFile, std::array<int, 10> Player2DeckID);
+        UI(std::string Name1, std::array<std::string, 10> Player1DeckFile, std::array<int, 10> Player1DeckID, std::string P1DrawFile,
+           std::string Name2, std::array<std::string, 10> Player2DeckFile, std::array<int, 10> Player2DeckID, std::string P2DrawFile);
         
         void Render(SDL_Surface* Surface);
         void DrawCard(Card& spot);
