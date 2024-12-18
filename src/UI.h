@@ -37,8 +37,8 @@ class UI {
 
     protected:
 
-        Button mDiscard {950, 80, 180, 80, {217,150,0,255}};
-        Button mCancel {1150, 80, 180, 80, {177,122,0,255}};
+        // Button mDiscard {950, 80, 180, 80, {217,150,0,255}};
+        // Button mCancel {1150, 80, 180, 80, {177,122,0,255}};
         int mCurrentMove{0};
         Player* mCurrentPlayer{nullptr};
         void Render(SDL_Surface* Surface, Player* Player);
@@ -60,7 +60,5 @@ class UI {
 
         void SetupHand(Player* Player);
         void SwapGraveyardAndShuffle(Player* Player);
-        bool IsWithinBounds(int x, int y, Button& Button);
-        
 
 };

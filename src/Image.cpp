@@ -21,18 +21,19 @@ Image::~Image(){SDL_FreeSurface(mImageSurface);}
 
 void Image::Render(SDL_Surface* DestinationSurface){
     if (mScalingMode == ScalingMode::Fill){
+        // ill-defined destination rectangle
         if (mAppliedDestRectangle.x == 0 &&
             mAppliedDestRectangle.y == 0 &&
             mAppliedDestRectangle.w == 0 &&
             mAppliedDestRectangle.h == 0){
             SDL_BlitScaled(mImageSurface, &mAppliedSrcRectangle,
                     DestinationSurface, nullptr);    
-        }else{
+        } else{
             SDL_BlitScaled(mImageSurface, &mAppliedSrcRectangle,
                     DestinationSurface, &mAppliedDestRectangle);
         }
         
-    }else{
+    } else{
         SDL_BlitSurface(mImageSurface, nullptr,
                     DestinationSurface, nullptr);    
     }    

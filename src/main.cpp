@@ -27,8 +27,15 @@
 #include "Board.h"
 #include "Orchestra.h"
 #include "Scene.h"
+#include "Screens/DeckScreen.h"
+#include "Screens/GameScreen.h"
+#include "Screens/SettingsScreen.h"
+#include "Screens/StartScreen.h"
+#include "Screens/TransitionScreen.h"
+#include "Screens/TutorialScreen.h"
 #include "Text.h"
 #include "DrawPile.h"
+
 
 int main(int argc, char** argv) {
 
@@ -50,18 +57,7 @@ int main(int argc, char** argv) {
         return -1;
     }
 
-    
-    int SceneIndex{0};
 
-    Image StartScreen{"../assets/img/screens/start.png"};
-    Image Player1Waiting{"../assets/img/screens/P1_turn.png"};
-    Image Player2Waiting{"../assets/img/screens/P2_turn.png"};
-
-    Orchestra Conductor("../assets/sounds/background.wav",
-                        "../assets/sounds/validPlay.wav",
-                        "../assets/sounds/invalidPlay.wav");
-    Conductor.PlayMusic();
-    
     // get screen size to start window
     SDL_DisplayMode DM;
     SDL_GetCurrentDisplayMode(0, &DM);
@@ -71,137 +67,60 @@ int main(int argc, char** argv) {
     int YStart = (DM.h - EmptyBoardHeight)/2;
     Window GameWindow(DM.w, DM.h);
 
-    
-    #include "Deck.h"
+    std::array<Screen*, 8> ScenesPtr;
+    StartScreen Start{"../assets/img/screens/P1_turn.png"};
+    GameScreen P1Game{{XStart, YStart, EmptyBoardWidth, EmptyBoardHeight}};
+    std::cout << std::format("GameScreen characteristics : {} {}  - {} {}", XStart, YStart, EmptyBoardWidth, EmptyBoardHeight) << std::endl;
+    TransitionScreen P1Transition{"../assets/img/screens/P2_turn.png", "Press space to continue", {100,100,500,500}, P2_GAME};
+    GameScreen P2Game{{XStart, YStart, EmptyBoardWidth, EmptyBoardHeight}};
+    TransitionScreen P2Transition{"../assets/img/screens/P1_turn.png", "Press space to continue", {100,100,500,500}, P1_GAME};
+    TutorialScreen Tutorial{"../assets/img/screens/tutorial.png", "Learn how to play the game", {500,400,866,300}};
+    SettingsScreen Settings{"../assets/img/screens/P1_turn.png"};
+    DeckScreen Deck{"../assets/img/screens/deck.jpg", "Deck building screen",{0,0,1366, 768}};
 
-    UI GameUI("Alice", Player1DeckFile, Player1DeckID, "../assets/img/cards/card_p1.png",
-              "Bob", Player2DeckFile, Player2DeckID,"../assets/img/cards/card_p2.png");
-    Board Arena{XStart, YStart, EmptyBoardWidth, EmptyBoardHeight};
+    ScenesPtr[0] = &Start;
+    ScenesPtr[1] = &P1Game;
+    ScenesPtr[2] = &P1Transition;
+    ScenesPtr[3] = &P2Game;
+    ScenesPtr[4] = &P2Transition;
+    ScenesPtr[5] = &Tutorial;
+    ScenesPtr[6] = &Settings;
+    ScenesPtr[7] = &Deck;
+    
+    int SceneIndex{0};
 
-    Text TextWaitP1Turn{"It is Blue turn!\nPress space to start your turn"};
-    TextWaitP1Turn.SetFontSize(56);
-    TextWaitP1Turn.mWrapSize = 350;
-    TextWaitP1Turn.mDestRectangle.x = 930;
-    TextWaitP1Turn.mDestRectangle.y = 150;
-    TextWaitP1Turn.mDestRectangle.w = 500;
-    TextWaitP1Turn.mDestRectangle.h = 800;
-    Text TextWaitP2Turn{"It is Red turn!\nPress space to start your turn"};
-    TextWaitP2Turn.SetFontSize(56);
-    TextWaitP2Turn.mDestRectangle.x = 930;
-    TextWaitP2Turn.mDestRectangle.y = 150;
-    TextWaitP2Turn.mDestRectangle.w = 500;
-    TextWaitP2Turn.mDestRectangle.h = 800;
-    TextWaitP2Turn.mWrapSize = 350;
-    
-    
+    Orchestra Conductor("../assets/sounds/abackground.wav",
+                        "../assets/sounds/validPlay.wav",
+                        "../assets/sounds/invalidPlay.wav");
+    Conductor.PlayMusic();
     
     SDL_Event Event;
     bool shouldQuit{false};
 
-    TextButton StartButton{"Start", SDL_Rect{650,200,250,120}};
-    StartButton.SetColor({255,140,3});
-    StartButton.mText.SetFontSize(56);
-
-    TextButton DeckBuildingButton{"Deck", SDL_Rect{650,350,250,120}};
-    DeckBuildingButton.SetColor({255,140,3});
-    DeckBuildingButton.mText.SetFontSize(56);
-
-    TextButton TutorialButton{"Tutorial", SDL_Rect{650,500,250,120}};
-    TutorialButton.SetColor({255,140,3});
-    TutorialButton.mText.SetFontSize(56);
-    
     std::vector<int> Triggers{SDLK_ESCAPE, SDLK_SPACE, SDLK_KP_ENTER};
     std::vector<int> Links{START, P1_GAME, P1_TRANSITION};
 
     while (!shouldQuit) {
         Uint32 frameStart = SDL_GetTicks();
 
+        // Event processing loop
         while(SDL_PollEvent(&Event)){
-            if (Event.type == SDL_QUIT) [[unlikely]]{ shouldQuit=true; }
-            if (Event.type == Events::CHANGE_SCENE){
-                SceneIndex = Event.motion.which;
-                }
-
-            if(Event.key.keysym.sym == SDLK_ESCAPE){
+            if (Event.type == SDL_QUIT) [[unlikely]]{
+                shouldQuit=true;
+            }
+            else if(Event.key.keysym.sym == SDLK_ESCAPE) [[unlikely]]{
                     SDL_Event Quit{SDL_QUIT};
                     SDL_PushEvent(&Quit);
                 }
-            
-            // Dispatch events only to current scene
-            if (SceneIndex == START){
-                
-                for (int i=0; i<Triggers.size(); ++i){
-                    if (Event.key.keysym.sym == Triggers[i]){
-                        SDL_Event ChangeScene{Events::CHANGE_SCENE};
-                        ChangeScene.motion.which = Links[i];
-                        SDL_PushEvent(&ChangeScene);
-                    }
-                }
-                
-            } else if (SceneIndex == P1_GAME){
-                if (Event.type == Events::UNIT_PLAYED){
-                    Conductor.HandleEvent(Event);   // Play sound
-                    Arena.HandleEvent(Event);       // Change board state
-                    GameUI.HandleEvent(Event);      // Draw new card
-                }else{
-                    GameUI.HandleEvent(Event);
-                    Arena.HandleEvent(Event);
-                }
-            } else if (SceneIndex == P1_TRANSITION){
-                if (Event.key.keysym.sym == SDLK_SPACE){
-                        SDL_Event ChangeScene{Events::CHANGE_SCENE};
-                        ChangeScene.motion.which = P2_GAME;
-                        SDL_PushEvent(&ChangeScene);
-                }
-
-            } else if (SceneIndex == P2_GAME){
-                if (Event.type == Events::UNIT_PLAYED){
-                    Conductor.HandleEvent(Event);   // Play sound
-                    Arena.HandleEvent(Event);       // Change board state
-                    GameUI.HandleEvent(Event);      // Draw new card
-                }else{
-                    GameUI.HandleEvent(Event);
-                    Arena.HandleEvent(Event);
-                }
-
-            } else if (SceneIndex == P2_TRANSITION){
-                if (Event.key.keysym.sym == SDLK_SPACE){
-                        SDL_Event ChangeScene{Events::CHANGE_SCENE};
-                        ChangeScene.motion.which = P2_GAME;
-                        SDL_PushEvent(&ChangeScene);
-                }
-
+            else if (Event.type == Events::CHANGE_SCENE){
+                SceneIndex = Event.motion.which;
             }
+            ScenesPtr[SceneIndex]->HandleEvent(Event);
         }
-        Arena.CheckHover(); // useless now?
-
-
+        
+        // Rendering
         GameWindow.Render();
-        // Dispatch events only to current scene
-        if (SceneIndex == START){
-            StartScreen.Render(GameWindow.GetSurface());
-            StartButton.Render(GameWindow.GetSurface());
-            DeckBuildingButton.Render(GameWindow.GetSurface());
-            TutorialButton.Render(GameWindow.GetSurface());
-        
-        } else if (SceneIndex == P1_GAME){
-            GameUI.Render(GameWindow.GetSurface());
-            Arena.Render(GameWindow.GetSurface());
-        
-        } else if (SceneIndex == P1_TRANSITION){
-            Player1Waiting.Render(GameWindow.GetSurface());
-            TextWaitP1Turn.Render(GameWindow.GetSurface());
-            Arena.Render(GameWindow.GetSurface());
-
-        } else if (SceneIndex == P2_GAME){
-            GameUI.Render(GameWindow.GetSurface());
-            Arena.Render(GameWindow.GetSurface());
-
-        } else if (SceneIndex == P2_TRANSITION){
-            Player2Waiting.Render(GameWindow.GetSurface());
-            TextWaitP2Turn.Render(GameWindow.GetSurface());
-            Arena.Render(GameWindow.GetSurface());
-        }
+        ScenesPtr[SceneIndex]->Render(GameWindow.GetSurface());
         GameWindow.Update();
     }
     Mix_Quit();

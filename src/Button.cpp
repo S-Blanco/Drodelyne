@@ -31,9 +31,16 @@ void Button::HandleMouseButton(const SDL_MouseButtonEvent& E){
     }
 }  
 
+bool Button::IsWithinBounds(int x, int y){
+    return !(   x < GetLeftX()
+             || x > GetRightX()
+             || y < GetTopY()
+             || y > GetBottomY());
+}
+
 
 TextButton::TextButton(std::string Content, SDL_Rect DestRect, SDL_Color Color)
-    :Button(DestRect.x, DestRect.y, DestRect.w, DestRect.h, Color),mText{DestRect, Content}{}
+    :Button(DestRect.x, DestRect.y, DestRect.w, DestRect.h, Color),mText{DestRect.w, DestRect, Content}{}
 
 void TextButton::PrintTextButtonInfo(){
     std::cout << "Text Button info :\n";

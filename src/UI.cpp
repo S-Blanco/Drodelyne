@@ -10,11 +10,11 @@ UI::UI(std::string Name1, std::array<std::string, mDeckSize> Player1DeckFile, st
         SetupHand(&mPlayers[0]);
         SetupHand(&mPlayers[1]);
 
-        mDiscard.mIsActive = false;
-        mDiscard.mIsVisible = false;
+        // mDiscard.mIsActive = false;
+        // mDiscard.mIsVisible = false;
 
-        mCancel.mIsActive = false;
-        mCancel.mIsVisible = false;
+        // mCancel.mIsActive = false;
+        // mCancel.mIsVisible = false;
 
         Write.SetFontSize(56);
         Write.mContent = std::format("{} : {}", mCurrentPlayer->mName, mCurrentPlayer->mObligation);
@@ -86,10 +86,10 @@ void UI::HandleEvent(const SDL_Event& E, Player* Player){
     if(E.type == Events::UNIT_PLAYED){
         Player->mPreviewSpot.mIsActive = false;
         Player->mPreviewSpot.mIsShown = false;
-        mDiscard.mIsActive = false;
-        mDiscard.mIsVisible = false;
-        mCancel.mIsActive = false;
-        mCancel.mIsVisible = false;
+        // mDiscard.mIsActive = false;
+        // mDiscard.mIsVisible = false;
+        // mCancel.mIsActive = false;
+        // mCancel.mIsVisible = false;
             Player->mGraveyardPile[Player->mCardIndex-1] = Player->mPreviewSpot.mID; //-1 because the discard is one card late compared to the draw
         for (Card& spot : Player->mCardSpots){
             if (spot.mIsEmpty){ DrawCard(spot, Player); }
@@ -107,38 +107,38 @@ void UI::HandleEvent(const SDL_Event& E, Player* Player){
     } else if (E.type == SDL_MOUSEBUTTONDOWN){
         mClickedOnHand=false;
 
-        if (mDiscard.mIsActive && IsWithinBounds(E.motion.x, E.motion.y, mDiscard)){
-            SDL_Event CardSelected{Events::CARD_SELECTED};
-            CardSelected.button.button = 5; // ID of free placement, TODO : put enum instead
-            SDL_PushEvent(&CardSelected);
+        // if (mDiscard.mIsActive && mDiscard.IsWithinBounds(E.motion.x, E.motion.y)){
+        //     SDL_Event CardSelected{Events::CARD_SELECTED};
+        //     CardSelected.button.button = 5; // ID of free placement, TODO : put enum instead
+        //     SDL_PushEvent(&CardSelected);
                 
-            Player->mObligation -= 5 ;
-            mDiscard.mIsActive = false;
+        //     Player->mObligation -= 5 ;
+        //     mDiscard.mIsActive = false;
 
-        }
-        if (mCancel.mIsActive && IsWithinBounds(E.motion.x, E.motion.y, mCancel)){
+        // }
+        // if (mCancel.mIsActive && mCancel.IsWithinBounds(E.motion.x, E.motion.y)){
 
-            Player->mPreviewSpot.mIsActive = false;
-            Player->mPreviewSpot.mIsShown = false;
-            for (Card& Card : Player->mCardSpots){
-                Card.mIsActive = true;
-                Card.mIsShown  = true;
-                Card.mIsEmpty  = false;
-            }
-            SDL_Event CardUnselected{Events::CARD_UNSELECTED};
-            SDL_PushEvent(&CardUnselected);
+        //     Player->mPreviewSpot.mIsActive = false;
+        //     Player->mPreviewSpot.mIsShown = false;
+        //     for (Card& Card : Player->mCardSpots){
+        //         Card.mIsActive = true;
+        //         Card.mIsShown  = true;
+        //         Card.mIsEmpty  = false;
+        //     }
+        //     SDL_Event CardUnselected{Events::CARD_UNSELECTED};
+        //     SDL_PushEvent(&CardUnselected);
 
-            // this will move since it is the clicking of the button that trigger the visibility/activity
-            mDiscard.mIsActive = false;
-            mDiscard.mIsVisible = false;
-            mCancel.mIsActive = false;
-            mCancel.mIsVisible = false;
-        }
+        //     // this will move since it is the clicking of the button that trigger the visibility/activity
+        //     mDiscard.mIsActive = false;
+        //     mDiscard.mIsVisible = false;
+        //     mCancel.mIsActive = false;
+        //     mCancel.mIsVisible = false;
+        // }
         // Check if click on a card in the player's hand
         for (Card& spot : Player->mCardSpots){ 
             if(spot.mIsActive 
             && !spot.mIsEmpty
-            && IsWithinBounds(E.motion.x, E.motion.y, spot)){
+            && spot.IsWithinBounds(E.motion.x, E.motion.y)){
                 Player->mPreviewSpot.CopyImage(spot);
                 Player->mPreviewSpot.mIsActive = true;
                 Player->mPreviewSpot.mIsShown = true;
@@ -151,10 +151,10 @@ void UI::HandleEvent(const SDL_Event& E, Player* Player){
                 CardSelected.button.button = spot.mID;
                 SDL_PushEvent(&CardSelected);
                 
-                mDiscard.mIsActive = true;
-                mDiscard.mIsVisible = true;
-                mCancel.mIsActive = true;
-                mCancel.mIsVisible = true;
+                // mDiscard.mIsActive = true;
+                // mDiscard.mIsVisible = true;
+                // mCancel.mIsActive = true;
+                // mCancel.mIsVisible = true;
                 
                 break;
             }
@@ -163,7 +163,7 @@ void UI::HandleEvent(const SDL_Event& E, Player* Player){
         if (E.button.button == SDL_BUTTON_RIGHT
         &&  !mClickedOnHand
         &&  Player->mPreviewSpot.mIsActive
-        &&  IsWithinBounds(E.motion.x, E.motion.y, Player->mPreviewSpot)){
+        &&  Player->mPreviewSpot.IsWithinBounds(E.motion.x, E.motion.y)){
             Player->mPreviewSpot.mIsActive = false;
             Player->mPreviewSpot.mIsShown = false;
             for (Card& Card : Player->mCardSpots){
@@ -175,26 +175,19 @@ void UI::HandleEvent(const SDL_Event& E, Player* Player){
             SDL_PushEvent(&CardUnselected);
 
             // this will move since it is the clicking of the button that trigger the visibility/activity
-            mDiscard.mIsActive = false;
-            mDiscard.mIsVisible = false;
-            mCancel.mIsActive = false;
-            mCancel.mIsVisible = false;
+            // mDiscard.mIsActive = false;
+            // mDiscard.mIsVisible = false;
+            // mCancel.mIsActive = false;
+            // mCancel.mIsVisible = false;
         }
     }
     
 }
 
-bool UI::IsWithinBounds(int x, int y, Button& Button){
-    return !(   x < Button.GetLeftX()
-             || x > Button.GetRightX()
-             || y < Button.GetTopY()
-             || y > Button.GetBottomY());
-}
-
 void UI::Render(SDL_Surface* Surface){
     Render(Surface, mCurrentPlayer);
-    mDiscard.Render(Surface);
-    mCancel.Render(Surface);
+    // mDiscard.Render(Surface);
+    // mCancel.Render(Surface);
 }
 
 void UI::Render(SDL_Surface* Surface, Player* Player){

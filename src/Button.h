@@ -15,6 +15,7 @@ class Button: public Rectangle{
         void HandleEvent(const SDL_Event& E);
         bool mIsActive {true};
         bool mIsVisible {true};
+        bool IsWithinBounds(int x, int y);
 
     protected:
         void ResizeButton(int x, int y, int w, int h);

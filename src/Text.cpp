@@ -1,8 +1,8 @@
 #include "Text.h"
 
 
-Text::Text(std::string Content)
-    :mFont{TTF_OpenFont("Roboto-Medium.ttf", 12)},mContent{Content}
+Text::Text(int WrapSize, std::string Content)
+    :mFont{TTF_OpenFont("Roboto-Medium.ttf", 56)},mContent{Content}, mWrapSize{WrapSize}
     {
         if(!mFont){
             std::cout << "Error loading font" << SDL_GetError() <<std::endl;
@@ -10,18 +10,14 @@ Text::Text(std::string Content)
         CreateSurface(Content);
     }
 
-Text::Text(SDL_Rect DestRect, std::string Content)
-:mDestRectangle{DestRect}, mFont{TTF_OpenFont("Roboto-Medium.ttf", 12)}, mContent{Content}
+Text::Text(int WrapSize, SDL_Rect DestRect, std::string Content)
+:mDestRectangle{DestRect}, mFont{TTF_OpenFont("Roboto-Medium.ttf", 56)}, mContent{Content}, mWrapSize{WrapSize}
     {
           if(!mFont){
             std::cout << "Error loading font" << SDL_GetError() <<std::endl;
         }
         CreateSurface(Content);
     }
-
-Text::Text(int FontSize)
-    :mFont{LoadFont(FontSize)}
-    {};
 
 Text::~Text(){
     if(TTF_WasInit){

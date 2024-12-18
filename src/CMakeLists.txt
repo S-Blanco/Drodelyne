@@ -14,6 +14,12 @@ add_executable(Game
                Orchestra.cpp
                Player.cpp
                Rectangle.cpp
+               Screens/DeckScreen.cpp
+               Screens/GameScreen.cpp
+               Screens/SettingsScreen.cpp
+               Screens/StartScreen.cpp
+               Screens/TransitionScreen.cpp
+               Screens/TutorialScreen.cpp
                Text.cpp
                UI.cpp
                Unit.cpp

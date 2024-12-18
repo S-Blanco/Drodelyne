@@ -8,8 +8,8 @@
 
 class Text{
     public:
-        Text(std::string Content=" ");
-        Text(SDL_Rect DestRect, std::string Content=" ");
+        Text(int WrapSize = 0, std::string Content = " ");
+        Text(int WrapSize, SDL_Rect DestRect, std::string Content=" ");
         ~Text();
         Text(const Text&) = delete;
         Text& operator=(const Text&) = delete;
@@ -21,12 +21,10 @@ class Text{
  
         SDL_Rect mDestRectangle{50,100,200,200};
         
-        int mWrapSize{200};
+        int mWrapSize;
         
     
     protected:
-
-        Text(int FontSize);
 
         TTF_Font* mFont;
         SDL_Surface* mTextSurface{nullptr};
