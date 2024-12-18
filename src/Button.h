@@ -1,8 +1,12 @@
 #pragma once
 
 #include <SDL.h>
+#include <string>
+#include <format>
+#include <iostream>
 
 #include "Rectangle.h"
+#include "Text.h"
 
 class Button: public Rectangle{
     public:
@@ -25,10 +29,14 @@ class Button: public Rectangle{
         void HandleMouseButton(const SDL_MouseButtonEvent& E);
 };
 
-class QuitButton : public Button{
+class TextButton : public Button{
     public:
-        QuitButton(int x, int y, int w, int h);
-        
-    protected:
-        void HandleLeftClick();
+    TextButton() = default;
+    TextButton(std::string Content, SDL_Rect DestRect, SDL_Color Color = {250,125,10});
+
+    void PrintTextButtonInfo();
+    void Render(SDL_Surface* Surface);
+
+    Text mText;
+
 };

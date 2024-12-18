@@ -10,6 +10,15 @@ Text::Text(std::string Content)
         CreateSurface(Content);
     }
 
+Text::Text(SDL_Rect DestRect, std::string Content)
+:mDestRectangle{DestRect}, mFont{TTF_OpenFont("Roboto-Medium.ttf", 12)}, mContent{Content}
+    {
+          if(!mFont){
+            std::cout << "Error loading font" << SDL_GetError() <<std::endl;
+        }
+        CreateSurface(Content);
+    }
+
 Text::Text(int FontSize)
     :mFont{LoadFont(FontSize)}
     {};

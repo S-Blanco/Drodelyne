@@ -4,10 +4,10 @@ Button::Button(int x, int y, int w, int h, SDL_Color Color)
     : Rectangle(x, y, w, h, Color){}
 
 void Button::ResizeButton(int x, int y, int w, int h){
-        Rect.x = x;
-        Rect.y = y;
-        Rect.w = w;
-        Rect.h = h;
+        mRect.x = x;
+        mRect.y = y;
+        mRect.w = w;
+        mRect.h = h;
 };
 
 void Button::HandleEvent(const SDL_Event& E){
@@ -32,10 +32,18 @@ void Button::HandleMouseButton(const SDL_MouseButtonEvent& E){
 }  
 
 
-QuitButton::QuitButton(int x, int y, int w, int h)
-    :Button{x, y, w, h, SDL_Color{255, 126, 126, 255}}{}
-        
-void QuitButton::HandleLeftClick(){
-    SDL_Event Quit{SDL_QUIT};
-    SDL_PushEvent(&Quit);
+TextButton::TextButton(std::string Content, SDL_Rect DestRect, SDL_Color Color)
+    :Button(DestRect.x, DestRect.y, DestRect.w, DestRect.h, Color),mText{DestRect, Content}{}
+
+void TextButton::PrintTextButtonInfo(){
+    std::cout << "Text Button info :\n";
+    std::cout << std::format("Content: {}\n" ,mText.mContent);
+    std::cout << std::format("Position (x, y): {} , {}\n", mRect.x, mRect.y);
+    std::cout << std::format("Width - Height: {} - {}\n", mRect.w, mRect.h);
+    std::cout << std::format("Color: {} {} {}\n", mColor.r, mColor.g, mColor.b);
+}
+
+void TextButton::Render(SDL_Surface* Surface){
+    Button::Render(Surface);
+    mText.Render(Surface);
 }

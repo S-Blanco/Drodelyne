@@ -9,6 +9,7 @@
 class Text{
     public:
         Text(std::string Content=" ");
+        Text(SDL_Rect DestRect, std::string Content=" ");
         ~Text();
         Text(const Text&) = delete;
         Text& operator=(const Text&) = delete;

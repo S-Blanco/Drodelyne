@@ -51,7 +51,7 @@ int main(int argc, char** argv) {
     }
 
     
-    int SceneIndex{1};
+    int SceneIndex{0};
 
     Image StartScreen{"../assets/img/screens/start.png"};
     Image Player1Waiting{"../assets/img/screens/P1_turn.png"};
@@ -98,6 +98,18 @@ int main(int argc, char** argv) {
     SDL_Event Event;
     bool shouldQuit{false};
 
+    TextButton StartButton{"Start", SDL_Rect{650,200,250,120}};
+    StartButton.SetColor({255,140,3});
+    StartButton.mText.SetFontSize(56);
+
+    TextButton DeckBuildingButton{"Deck", SDL_Rect{650,350,250,120}};
+    DeckBuildingButton.SetColor({255,140,3});
+    DeckBuildingButton.mText.SetFontSize(56);
+
+    TextButton TutorialButton{"Tutorial", SDL_Rect{650,500,250,120}};
+    TutorialButton.SetColor({255,140,3});
+    TutorialButton.mText.SetFontSize(56);
+    
     std::vector<int> Triggers{SDLK_ESCAPE, SDLK_SPACE, SDLK_KP_ENTER};
     std::vector<int> Links{START, P1_GAME, P1_TRANSITION};
 
@@ -107,7 +119,6 @@ int main(int argc, char** argv) {
         while(SDL_PollEvent(&Event)){
             if (Event.type == SDL_QUIT) [[unlikely]]{ shouldQuit=true; }
             if (Event.type == Events::CHANGE_SCENE){
-                std::cout << std::format("Change the scene index") << std::endl;
                 SceneIndex = Event.motion.which;
                 }
 
@@ -121,7 +132,6 @@ int main(int argc, char** argv) {
                 
                 for (int i=0; i<Triggers.size(); ++i){
                     if (Event.key.keysym.sym == Triggers[i]){
-                        std::cout << std::format("Must change to scene: {}", Links[i]) << std::endl;
                         SDL_Event ChangeScene{Events::CHANGE_SCENE};
                         ChangeScene.motion.which = Links[i];
                         SDL_PushEvent(&ChangeScene);
@@ -170,6 +180,9 @@ int main(int argc, char** argv) {
         // Dispatch events only to current scene
         if (SceneIndex == START){
             StartScreen.Render(GameWindow.GetSurface());
+            StartButton.Render(GameWindow.GetSurface());
+            DeckBuildingButton.Render(GameWindow.GetSurface());
+            TutorialButton.Render(GameWindow.GetSurface());
         
         } else if (SceneIndex == P1_GAME){
             GameUI.Render(GameWindow.GetSurface());
@@ -189,7 +202,6 @@ int main(int argc, char** argv) {
             TextWaitP2Turn.Render(GameWindow.GetSurface());
             Arena.Render(GameWindow.GetSurface());
         }
-
         GameWindow.Update();
     }
     Mix_Quit();
