@@ -7,6 +7,7 @@ void StartScreen::Render(SDL_Surface* Surface){
     mStartButton.Render(Surface);
     mTutorialButton.Render(Surface);
     mDeckButton.Render(Surface);
+    mSettings.Render(Surface);
 }
 void StartScreen::Update(){
     ;
@@ -16,18 +17,22 @@ void StartScreen::HandleEvent(SDL_Event& E){
     &&  E.button.button == SDL_BUTTON_LEFT){
         int x = E.button.x;
         int y = E.button.y;
-        if (mStartButton.IsWithinBonds(x, y)){
+        if (mStartButton.IsWithinBounds(x, y)){
             SDL_Event ChangeScene(Events::CHANGE_SCENE);
-            ChangeScene.motion.which = P1_GAME;
+            ChangeScene.motion.which = GAME;
             SDL_PushEvent(&ChangeScene);
-        }else if (mTutorialButton.IsWithinBonds(x, y)){
+        }else if (mTutorialButton.IsWithinBounds(x, y)){
             SDL_Event ChangeScene(Events::CHANGE_SCENE);
             ChangeScene.motion.which = TUTORIAL;
             SDL_PushEvent(&ChangeScene);
             
-        }else if (mDeckButton.IsWithinBonds(x, y)){
+        }else if (mDeckButton.IsWithinBounds(x, y)){
             SDL_Event ChangeScene(Events::CHANGE_SCENE);
             ChangeScene.motion.which = DECK;
+            SDL_PushEvent(&ChangeScene);
+        }else if (mSettings.IsWithinBounds(x,y)){
+            SDL_Event ChangeScene(Events::CHANGE_SCENE);
+            ChangeScene.motion.which = SETTINGS;
             SDL_PushEvent(&ChangeScene);
         }
     }

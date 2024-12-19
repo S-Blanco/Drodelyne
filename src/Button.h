@@ -15,15 +15,13 @@ class Button: public Rectangle{
         void HandleEvent(const SDL_Event& E);
         bool mIsActive {true};
         bool mIsVisible {true};
-        bool IsWithinBounds(int x, int y);
-
     protected:
         void ResizeButton(int x, int y, int w, int h);
         virtual void HandleMouseEnter(){};
         virtual void HandleMouseExit(){};
         virtual void HandleLeftClick(){};
         virtual void HandleRightClick(){};
-        
+        int mLastClickTime{0};
 
     private:
         void HandleMouseMotion(const SDL_MouseMotionEvent& E);

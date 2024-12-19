@@ -16,6 +16,7 @@ namespace Events{
     const Uint32 TO_P2SCREEN{SDL_RegisterEvents(1)};
     const Uint32 TO_P2TRANSITION{SDL_RegisterEvents(1)};
 
-    
+    const Uint32 VOLUME_UP{SDL_RegisterEvents(1)};
+    const Uint32 VOLUME_DOWN{SDL_RegisterEvents(1)};
 }
  

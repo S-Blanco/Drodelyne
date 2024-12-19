@@ -3,22 +3,21 @@
 
 UI::UI(std::string Name1, std::array<std::string, mDeckSize> Player1DeckFile, std::array<int, 10> Player1DeckID, std::string P1DrawFile,
        std::string Name2, std::array<std::string, mDeckSize> Player2DeckFile, std::array<int, 10> Player2DeckID, std::string P2DrawFile)
-       : mPlayers{{Name1, Player1DeckFile, Player1DeckID, P1DrawFile},{Name2, Player2DeckFile, Player2DeckID, P2DrawFile}}
+       : mPlayers{{Name1, Player1DeckFile, Player1DeckID, P1DrawFile},
+                  {Name2, Player2DeckFile, Player2DeckID, P2DrawFile}},
+         mWrite{225, {20, 50, 500, 500}, ""}
     {
         
         mCurrentPlayer = &mPlayers[0];
         SetupHand(&mPlayers[0]);
         SetupHand(&mPlayers[1]);
+        
 
         // mDiscard.mIsActive = false;
         // mDiscard.mIsVisible = false;
 
         // mCancel.mIsActive = false;
         // mCancel.mIsVisible = false;
-
-        Write.SetFontSize(56);
-        Write.mContent = std::format("{} : {}", mCurrentPlayer->mName, mCurrentPlayer->mObligation);
-
 
     }
     
@@ -198,7 +197,9 @@ void UI::Render(SDL_Surface* Surface, Player* Player){
     Player->mPreviewSpot.Render(Surface);
     
     // Move that elsewhere?
-    Write.mContent = std::format("{} :\n{}", mCurrentPlayer->mName, mCurrentPlayer->mObligation);
-    Write.Render(Surface);
+    mWrite.mContent = std::format("Debt:\n{} : {}\n{} : {}",
+                                 mPlayers[0].mName, mPlayers[0].mObligation,
+                                 mPlayers[1].mName, mPlayers[1].mObligation);
+    mWrite.Render(Surface);
 
 }

@@ -17,7 +17,7 @@ void Button::HandleEvent(const SDL_Event& E){
 };
 
 void Button::HandleMouseMotion(const SDL_MouseMotionEvent& E){
-    if (IsWithinBonds(E.x, E.y)){
+    if (IsWithinBounds(E.x, E.y)){
         HandleMouseEnter();
     }else {
         HandleMouseExit();
@@ -25,19 +25,12 @@ void Button::HandleMouseMotion(const SDL_MouseMotionEvent& E){
 }
 
 void Button::HandleMouseButton(const SDL_MouseButtonEvent& E){
-    if (IsWithinBonds(E.x, E.y)){
+    if (IsWithinBounds(E.x, E.y) && (E.timestamp - mLastClickTime)>1000){
+        mLastClickTime = E.timestamp;
         if (E.button == SDL_BUTTON_LEFT) HandleLeftClick();
         else if (E.button == SDL_BUTTON_RIGHT) HandleRightClick();
     }
-}  
-
-bool Button::IsWithinBounds(int x, int y){
-    return !(   x < GetLeftX()
-             || x > GetRightX()
-             || y < GetTopY()
-             || y > GetBottomY());
 }
-
 
 TextButton::TextButton(std::string Content, SDL_Rect DestRect, SDL_Color Color)
     :Button(DestRect.x, DestRect.y, DestRect.w, DestRect.h, Color),mText{DestRect.w, DestRect, Content}{}

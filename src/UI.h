@@ -33,7 +33,7 @@ class UI {
         void DrawCard(Card& spot);
         void HandleEvent(const SDL_Event& E);
     
-        Text Write;
+        Text mWrite;
 
     protected:
 

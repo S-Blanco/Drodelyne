@@ -10,7 +10,7 @@ void Rectangle::Render(SDL_Surface* Surface) {
 }
 
 
-bool Rectangle::IsWithinBonds(int x, int y){
+bool Rectangle::IsWithinBounds(int x, int y){
     if (x < mRect.x) return false;
     if (x > mRect.x + mRect.w) return false;
     if (y < mRect.y) return false;
@@ -23,5 +23,9 @@ void Rectangle::ChangeRectangle(int x, int y, int w, int h){
     mRect.y = y;
     mRect.w = w;
     mRect.h = h;
+}
+
+void Rectangle::SetWidth(int NewWidth){
+    mRect.w = NewWidth;
 }
 

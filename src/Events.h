@@ -17,5 +17,8 @@ namespace Events{
     extern const Uint32 TO_P1TRANSITION;
     extern const Uint32 TO_P2SCREEN;
     extern const Uint32 TO_P2TRANSITION;
+
+    extern const Uint32 VOLUME_UP;
+    extern const Uint32 VOLUME_DOWN;
 }
  
