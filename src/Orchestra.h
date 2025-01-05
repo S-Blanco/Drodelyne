@@ -21,6 +21,10 @@ class Orchestra{
         void HandleEvent(const SDL_Event& E);
         void PlayMusic();
         void PlaySound(Mix_Chunk* sound);
+        int SoundVolume{SDL_MIX_MAXVOLUME/2};
+        void LowerMusic();
+        void IncreaseMusic();
+             
     private:
         Mix_Music* mBackground{nullptr};
         Mix_Chunk* mPlaySound{nullptr};
