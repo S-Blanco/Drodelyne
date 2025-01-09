@@ -51,6 +51,8 @@ int main(int argc, char** argv) {
         return -1;
     }
 
+    bool RightClickAlreadyPressed{false};
+    bool LeftClickAlreadyPressed{false};
 
     // get screen size to start window
     SDL_DisplayMode DM;
@@ -140,20 +142,37 @@ int main(int argc, char** argv) {
             while(SDL_PollEvent(&Event)){
                 if (Event.type == SDL_QUIT) [[unlikely]]{
                     shouldQuit=true;
+                } else if(Event.key.keysym.sym == SDLK_ESCAPE) [[unlikely]]
+                {
+                    SDL_Event Quit{SDL_QUIT};
+                    SDL_PushEvent(&Quit);
                 } else if (Event.type == Events::VOLUME_DOWN)
                 {
                     Conductor.LowerMusic();
                 } else if (Event.type == Events::VOLUME_UP)
                 {
                     Conductor.IncreaseMusic();
-                } else if(Event.key.keysym.sym == SDLK_ESCAPE) [[unlikely]]
-                {
-                    SDL_Event Quit{SDL_QUIT};
-                    SDL_PushEvent(&Quit);
-                } else if (Event.type == Events::CHANGE_SCENE){
+                }else if (Event.type == Events::CHANGE_SCENE){
                     SceneIndex = Event.motion.which;
+                } else if (Event.type == SDL_MOUSEBUTTONDOWN){
+                    if (Event.button.button == SDL_BUTTON_LEFT && !LeftClickAlreadyPressed){
+                        LeftClickAlreadyPressed = true;
+                        ScenesPtr[SceneIndex]->HandleEvent(Event);
+                    }else if (Event.button.button == SDL_BUTTON_RIGHT && !RightClickAlreadyPressed){
+                        RightClickAlreadyPressed = true;
+                        ScenesPtr[SceneIndex]->HandleEvent(Event);
+                    }
+                }else if (Event.type == SDL_MOUSEBUTTONUP){
+                    if (Event.button.button == SDL_BUTTON_LEFT){
+                        LeftClickAlreadyPressed = false;
+                    }else if (Event.button.button == SDL_BUTTON_RIGHT){
+                        RightClickAlreadyPressed = false;
+                    }
+                } else {
+                   ScenesPtr[SceneIndex]->HandleEvent(Event);
                 }
             }
+            
             // Rendering
             GameWindow.Render();
             ScenesPtr[SceneIndex]->Render(GameWindow.GetSurface());
