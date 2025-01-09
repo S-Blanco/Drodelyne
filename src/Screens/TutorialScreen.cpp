@@ -23,7 +23,7 @@ void TutorialScreen::Update(){
 void TutorialScreen::HandleEvent(SDL_Event& E){
     if (E.type = SDL_MOUSEBUTTONDOWN
         && E.button.button == SDL_BUTTON_LEFT
-        &&  (E.button.timestamp - mLastClickTime)> 250){
+        &&  (E.button.timestamp - mLastClickTime)> Config::MOUSE_DELAY){
         
         mLastClickTime = E.button.timestamp;
         

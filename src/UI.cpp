@@ -5,7 +5,7 @@ UI::UI(std::string Name1, std::array<std::string, mDeckSize> Player1DeckFile, st
        std::string Name2, std::array<std::string, mDeckSize> Player2DeckFile, std::array<int, 10> Player2DeckID, std::string P2DrawFile)
        : mPlayers{{Name1, Player1DeckFile, Player1DeckID, P1DrawFile},
                   {Name2, Player2DeckFile, Player2DeckID, P2DrawFile}},
-         mWrite{225, {20, 50, 500, 500}, ""}
+         mWrite{225, {20, 50, 500, 500}, " "}
     {
         
         mCurrentPlayer = &mPlayers[0];

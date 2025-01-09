@@ -24,7 +24,6 @@ Board::Board(int UpperX, int UpperY, int ImgWidth, int ImgHeight)
             mBoardState[i][j] = Empty;
         }
     }
-
 }
 
 void Board::HandleEvent(const SDL_Event& E){

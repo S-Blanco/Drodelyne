@@ -9,6 +9,7 @@
 #include "../Text.h"
 #include "../Button.h"
 #include "../Scene.h"
+#include "../Global.h"
 
 class TutorialScreen : public Screen{
     public:
