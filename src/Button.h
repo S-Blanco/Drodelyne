@@ -21,7 +21,6 @@ class Button: public Rectangle{
         virtual void HandleMouseExit(){};
         virtual void HandleLeftClick(){};
         virtual void HandleRightClick(){};
-        int mLastClickTime{0};
 
     private:
         void HandleMouseMotion(const SDL_MouseMotionEvent& E);

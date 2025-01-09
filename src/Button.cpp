@@ -25,8 +25,7 @@ void Button::HandleMouseMotion(const SDL_MouseMotionEvent& E){
 }
 
 void Button::HandleMouseButton(const SDL_MouseButtonEvent& E){
-    if (IsWithinBounds(E.x, E.y) && (E.timestamp - mLastClickTime)>1000){
-        mLastClickTime = E.timestamp;
+    if (IsWithinBounds(E.x, E.y)){
         if (E.button == SDL_BUTTON_LEFT) HandleLeftClick();
         else if (E.button == SDL_BUTTON_RIGHT) HandleRightClick();
     }
