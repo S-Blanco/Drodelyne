@@ -11,6 +11,7 @@ class Window {
         Window& operator=(const Window&) = delete;
 
         SDL_Surface* GetSurface();
+        SDL_Window* GetWindow();
         void Update();
         void Render();
 
