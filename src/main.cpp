@@ -1,8 +1,3 @@
-// TODO : Replace cursor with something more immersive
-// 1. Because it will look cooler.
-// 2. Because it seems that the coordinates given is the center of the arrow and not the tip
-//    which can cause a lot of missclick.
-
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
@@ -35,7 +30,6 @@
 #include "Screens/TutorialScreen.h"
 #include "Text.h"
 #include "DrawPile.h"
-
 
 int main(int argc, char** argv) {
 
@@ -112,55 +106,62 @@ int main(int argc, char** argv) {
     ScenesPtr[6] = &Deck;
     
     int SceneIndex{0};
-
-    Orchestra Conductor("../assets/sounds/background.wav",
+    Orchestra Conductor("../assets/sounds/Battle Ready.mp3",
                         "../assets/sounds/validPlay.wav",
                         "../assets/sounds/invalidPlay.wav");
     Conductor.PlayMusic();
-    int SoundVolume{SDL_MIX_MAXVOLUME/2};
-    Mix_VolumeMusic(SoundVolume);
     
     SDL_Event Event;
     bool shouldQuit{false};
 
-    std::vector<int> Triggers{SDLK_ESCAPE, SDLK_SPACE, SDLK_KP_ENTER};
-    std::vector<int> Links{START, GAME, P1_TRANSITION};
+    int CheckTime{SDL_GetTicks64()};
+    int FPS{0};
+    int now;
+    int last;
 
     while (!shouldQuit) {
-        Uint32 frameStart = SDL_GetTicks();
 
-        // Event processing loop
-        while(SDL_PollEvent(&Event)){
-            if (Event.type == SDL_QUIT) [[unlikely]]{
-                shouldQuit=true;
-            }else if (Event.type == Events::VOLUME_DOWN)
-            {
-                SoundVolume -= SDL_MIX_MAXVOLUME / 10;
-                if (SoundVolume < 0) SoundVolume = 0;
-                Mix_VolumeMusic(SoundVolume);
-    
-            }else if (Event.type == Events::VOLUME_UP)
-            {
-                SoundVolume += SDL_MIX_MAXVOLUME / 10;
-                if (SoundVolume > SDL_MIX_MAXVOLUME) SoundVolume = SDL_MIX_MAXVOLUME;
-                Mix_VolumeMusic(SoundVolume);
-    
-            }
-            
-            else if(Event.key.keysym.sym == SDLK_ESCAPE) [[unlikely]]{
+        // Framerate limiter
+        if (SDL_GetTicks64() >  (CheckTime + 1000/Config::TARGET_FPS)){
+            CheckTime = SDL_GetTicks64();
+            ++FPS;
+
+            now = time(NULL);
+            if(now!=last)
+                {
+                std::cout << "FPS: " << FPS/(now-last) << std::endl;
+                last = now;
+                FPS = 0;
+                }
+
+        
+
+            // Event processing loop
+            while(SDL_PollEvent(&Event)){
+                if (Event.type == SDL_QUIT) [[unlikely]]{
+                    shouldQuit=true;
+                } else if (Event.type == Events::VOLUME_DOWN)
+                {
+                    Conductor.LowerMusic();
+                } else if (Event.type == Events::VOLUME_UP)
+                {
+                    Conductor.IncreaseMusic();
+                } else if(Event.key.keysym.sym == SDLK_ESCAPE) [[unlikely]]
+                {
                     SDL_Event Quit{SDL_QUIT};
                     SDL_PushEvent(&Quit);
+                } else if (Event.type == Events::CHANGE_SCENE){
+                    SceneIndex = Event.motion.which;
                 }
-            else if (Event.type == Events::CHANGE_SCENE){
-                SceneIndex = Event.motion.which;
             }
-            ScenesPtr[SceneIndex]->HandleEvent(Event);
+            // Rendering
+            GameWindow.Render();
+            ScenesPtr[SceneIndex]->Render(GameWindow.GetSurface());
+            GameWindow.Update();
+
+        } else {
+            SDL_Delay(5);
         }
-        
-        // Rendering
-        GameWindow.Render();
-        ScenesPtr[SceneIndex]->Render(GameWindow.GetSurface());
-        GameWindow.Update();
     }
     Mix_Quit();
     IMG_Quit();
