@@ -13,7 +13,9 @@ void Button::ResizeButton(int x, int y, int w, int h){
 void Button::HandleEvent(const SDL_Event& E){
     if (!mIsActive) return;
     if (E.type == SDL_MOUSEMOTION) HandleMouseMotion(E.motion);
-    if (E.type == SDL_MOUSEBUTTONDOWN) HandleMouseButton(E.button);
+    if (E.type == SDL_MOUSEBUTTONDOWN && !mButtonPressed){
+        HandleMouseButton(E.button);
+        }
 };
 
 void Button::HandleMouseMotion(const SDL_MouseMotionEvent& E){
@@ -26,8 +28,12 @@ void Button::HandleMouseMotion(const SDL_MouseMotionEvent& E){
 
 void Button::HandleMouseButton(const SDL_MouseButtonEvent& E){
     if (IsWithinBounds(E.x, E.y)){
-        if (E.button == SDL_BUTTON_LEFT) HandleLeftClick();
-        else if (E.button == SDL_BUTTON_RIGHT) HandleRightClick();
+        if (E.button == SDL_BUTTON_LEFT){
+            HandleLeftClick();
+            mButtonPressed = true;
+        } else if (E.button == SDL_BUTTON_RIGHT){
+            HandleRightClick();
+        }
     }
 }
 

@@ -16,6 +16,7 @@ class Button: public Rectangle{
         bool mIsActive {true};
         bool mIsVisible {true};
     protected:
+        bool mButtonPressed{false};
         void ResizeButton(int x, int y, int w, int h);
         virtual void HandleMouseEnter(){};
         virtual void HandleMouseExit(){};
@@ -34,7 +35,6 @@ class TextButton : public Button{
 
     void PrintTextButtonInfo();
     void Render(SDL_Surface* Surface);
-
     Text mText;
 
 };
