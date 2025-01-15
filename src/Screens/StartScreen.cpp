@@ -1,9 +1,12 @@
 #include "StartScreen.h"
 
-StartScreen::StartScreen(std::string File):mBackground{File}{}
+StartScreen::StartScreen(std::string File):mBackground{File}{
+    mGameTitle.SetFontSize(150);
+}
 
 void StartScreen::Render(SDL_Surface* Surface){
     mBackground.Render(Surface);
+    mGameTitle.Render(Surface);
     mStartButton.Render(Surface);
     mTutorialButton.Render(Surface);
     mDeckButton.Render(Surface);

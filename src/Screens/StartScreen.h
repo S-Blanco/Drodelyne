@@ -8,15 +8,18 @@
 #include "../Image.h"
 #include "../Button.h"
 #include "../Layout.h"
+#include "../Text.h"
 
 class StartScreen : public Screen{
     public:
     StartScreen(std::string File);
     Image mBackground;
-    TextButton mStartButton{"Start",        {(Layout::ScreenWidth-250)/2,100,250,80}, {10,50,100}};
-    TextButton mTutorialButton{"Tutorial",  {(Layout::ScreenWidth-250)/2,220,250,80}, {20,100,200}};
-    TextButton mDeckButton{"Deck",          {(Layout::ScreenWidth-250)/2,340,250,80}, {30,150,255}};
-    TextButton mSettings{"Settings",        {(Layout::ScreenWidth-250)/2,460,250,80}, {30,150,255}};
+        
+    Text mGameTitle{800, {50,95,800,200}, "Drodelyne"};
+    TextButton mStartButton{"Start",        {(2*Layout::ScreenWidth)/3,200,250,80}, {58,137,220}};
+    TextButton mTutorialButton{"Tutorial",  {(2*Layout::ScreenWidth)/3,320,250,80}, {58,137,220}};
+    TextButton mDeckButton{"Deck",          {(2*Layout::ScreenWidth)/3,440,250,80}, {58,137,220}};
+    TextButton mSettings{"Settings",        {(2*Layout::ScreenWidth)/3,560,250,80}, {58,137,220}};
 
     void Render(SDL_Surface* Surface);
     void Update();
