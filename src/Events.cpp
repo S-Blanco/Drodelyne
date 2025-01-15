@@ -18,5 +18,12 @@ namespace Events{
 
     const Uint32 VOLUME_UP{SDL_RegisterEvents(1)};
     const Uint32 VOLUME_DOWN{SDL_RegisterEvents(1)};
+
+    const Uint32 STOP_ANIMATION{SDL_RegisterEvents(1)};
+
+    const Uint32 WHITE_PASSED{SDL_RegisterEvents(1)};
+    const Uint32 BLACK_PASSED{SDL_RegisterEvents(1)};
+    const Uint32 SCORE_GAME{SDL_RegisterEvents(1)};
+
 }
  

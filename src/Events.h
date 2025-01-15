@@ -20,5 +20,11 @@ namespace Events{
 
     extern const Uint32 VOLUME_UP;
     extern const Uint32 VOLUME_DOWN;
+
+    extern const Uint32 STOP_ANIMATION;
+
+    extern const Uint32 WHITE_PASSED;
+    extern const Uint32 BLACK_PASSED;
+    extern const Uint32 SCORE_GAME;
 }
  
