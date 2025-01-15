@@ -21,6 +21,14 @@ void Orchestra::PlaySound(Mix_Chunk* sound){ Mix_PlayChannel(-1, sound, 0); }
 void Orchestra::PlayMusic(){ Mix_PlayMusic(mBackground, -1); }
 
 
+void Orchestra::HandleEvent(const SDL_Event& E){
+    if (E.type == Events::VOLUME_DOWN) {
+        LowerMusic();
+    } else if(E.type == Events::VOLUME_UP) {
+        IncreaseMusic();
+    }
+}
+
 void Orchestra::LowerMusic(){
     // TODO: add proper sound volume code, perception is log, not linear 
     SoundVolume -= SDL_MIX_MAXVOLUME / 10;

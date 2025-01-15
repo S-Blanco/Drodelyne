@@ -95,10 +95,9 @@ int main(int argc, char** argv) {
                              {950,200,350,600},
                              {950,200,350,300},
                              {950,200,350,300}};
-    std::array<Screen*, 6> ScenesPtr;
-    StartScreen Start{"../assets/img/screens/P1_turn.png"};
-    GameScreen P1Game{{XStart, YStart, EmptyBoardWidth, EmptyBoardHeight}};
-    std::cout << std::format("GameScreen characteristics : {} {}  - {} {}", XStart, YStart, EmptyBoardWidth, EmptyBoardHeight) << std::endl;
+    
+    StartScreen Start{"../assets/img/screens/title.png"};
+    GameScreen Game{{XStart, YStart, EmptyBoardWidth, EmptyBoardHeight}};
     TransitionScreen P1Transition{"../assets/img/screens/P1_turn.png",
                                   "Press space to start your turn",
                                   {DM.w/2 - 250, DM.h/3, 500, 500},
@@ -109,14 +108,7 @@ int main(int argc, char** argv) {
                                   GAME};
     TutorialScreen Tutorial{TutosImg, TutosText, TutosRect};
     SettingsScreen Settings{"../assets/img/screens/P1_turn.png"};
-
-    ScenesPtr[0] = &Start;
-    ScenesPtr[1] = &P1Game;
-    ScenesPtr[2] = &P1Transition;
-    ScenesPtr[3] = &P2Transition;
-    ScenesPtr[4] = &Tutorial;
-    ScenesPtr[5] = &Settings;
-    
+    std::array<Screen*, 6> ScenesPtr{ &Start, &Game, &P1Transition, &P2Transition, &Tutorial, &Settings };
     int SceneIndex{0};
     Orchestra Conductor("../assets/sounds/Battle Ready.mp3");
     Conductor.PlayMusic();
@@ -138,25 +130,19 @@ int main(int argc, char** argv) {
             now = time(NULL);
             if(now!=last)
                 {
-                std::cout << "FPS: " << FPS/(now-last) << std::endl;
+                // std::cout << "FPS: " << FPS/(now-last) << std::endl;
                 last = now;
                 FPS = 0;
                 }
 
             // Event processing loop
             while(SDL_PollEvent(&Event)){
-                if (Event.type == SDL_QUIT) [[unlikely]]{
+                if (Event.type == SDL_QUIT
+                    || Event.key.keysym.sym == SDLK_ESCAPE) [[unlikely]]{
                     shouldQuit=true;
-                } else if(Event.key.keysym.sym == SDLK_ESCAPE) [[unlikely]]
+                } else if (Event.type == Events::VOLUME_DOWN || Event.type == Events::VOLUME_UP)
                 {
-                    SDL_Event Quit{SDL_QUIT};
-                    SDL_PushEvent(&Quit);
-                } else if (Event.type == Events::VOLUME_DOWN)
-                {
-                    Conductor.LowerMusic();
-                } else if (Event.type == Events::VOLUME_UP)
-                {
-                    Conductor.IncreaseMusic();
+                    Conductor.HandleEvent(Event);
                 }else if (Event.type == Events::CHANGE_SCENE){
                     SceneIndex = Event.motion.which;
                 } else if (Event.type == SDL_MOUSEBUTTONDOWN){
@@ -173,30 +159,21 @@ int main(int argc, char** argv) {
                     }else if (Event.button.button == SDL_BUTTON_RIGHT){
                         RightClickAlreadyPressed = false;
                     }
-                } else if(Event.type == Events::BLUE_PASSED){
-                    if (Player2HasPassed){
-                        // score game
-                        std::cout << "Score the game" << std::endl;
-                        SDL_Event Quit{SDL_QUIT};
-                        SDL_PushEvent(&Quit);
-                        
+                } else if(Event.type == Events::P1_PASSED){
+                    if (Player2HasPassed){ // both player passed, score the game
+                        std::cout << "Scoring the game" << std::endl;
                     } else{
                         Player1HasPassed = true;
-                        std::cout << "P1 has passed" << std::endl;
                         ScenesPtr[SceneIndex]->HandleEvent(Event);
                     }
-                } else if(Event.type == Events::RED_PASSED){
-                    if (Player1HasPassed){
-                        // score game
-                        std::cout << "Score the game" << std::endl;
-                        SDL_Event Quit{SDL_QUIT};
-                        SDL_PushEvent(&Quit);
+                } else if(Event.type == Events::P2_PASSED){
+                    if (Player1HasPassed){ // both player passed, score the game
+                        std::cout << "Scoring the game" << std::endl;
                     } else{
                         Player2HasPassed = true;
-                        std::cout << "P2 has passed" << std::endl;
                         ScenesPtr[SceneIndex]->HandleEvent(Event);
                     }
-                } else if (Event.type == Events::UNIT_PLAYED){
+                } else if (Event.type == Events::TURN_ENDED){
                     Player1HasPassed = false;
                     Player2HasPassed = false;
                     ScenesPtr[SceneIndex]->HandleEvent(Event);
