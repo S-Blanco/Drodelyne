@@ -31,20 +31,19 @@ class UI {
         
         void Render(SDL_Surface* Surface);
         void DrawCard(Card& spot);
-        void HandleEvent(const SDL_Event& E);
-    
-        Text mWrite;
+        void HandleEvent(const SDL_Event& E, int& mCurrentMove);
 
     protected:
 
-        int mCurrentMove{0};
+        Text mWrite;
         Player* mCurrentPlayer{nullptr};
+
         void Render(SDL_Surface* Surface, Player* Player);
         void DrawCard(Card& spot, Player* Player);
-        void HandleEvent(const SDL_Event& E, Player* Player);
+        void HandleEvent(const SDL_Event& E, Player* Player, int& CurrentMove);
         static const int mHandSize{4};
         static const int mDeckSize{10};
-        static const int mDrawingSize{mDeckSize - mHandSize +1}; // Shuffling when card played so 3 cards in hand, the rest on the pile
+        static const int mDrawingSize{mDeckSize - mHandSize +1}; // Shuffling after card was played so 3 cards are still in the hand, the rest is on the pile
         
         
         int mCardWidth;
@@ -53,17 +52,12 @@ class UI {
         int mCardGapY;
         
         bool mMousePressed{false};
-        int mXStart;
-        int mYStart;
-        int mXEnd;
-        int mYEnd;
-        
 
         TextButton mPassButton {"Pass",
-                                {   Layout::TopHandX,
-                                    Layout::TopHandY + 2*Layout::CardHeight + Layout::InterRowY + Layout::PassButtonMarginY ,
-                                    2*Layout::CardWidth + Layout::CardMarginX,
-                                    Layout::PassButtonHeight},
+                                {Layout::TopHandX,
+                                 Layout::TopHandY + 2*Layout::CardHeight + Layout::InterRowY + Layout::PassButtonMarginY ,
+                                 2*Layout::CardWidth + Layout::CardMarginX,
+                                 Layout::PassButtonHeight},
                                 Colors::BlueButton};
 
         bool mClickedOnHand{false};

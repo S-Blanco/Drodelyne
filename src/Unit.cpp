@@ -10,8 +10,6 @@ Unit::Unit(int x, int y, int Row, int Col):
 
 
 void Unit::HandleEvent(const SDL_Event& E, int& MoveNbr){
-    
-    if (E.type == SDL_MOUSEMOTION){ HandleMouseMotion(E.motion); }
     if (E.type == SDL_MOUSEBUTTONDOWN) {HandleMouseClick(E.button, MoveNbr);}
 }
 
@@ -22,20 +20,10 @@ void Unit::Render(SDL_Surface* Destination){
     else if (mStatus==Forecast) {SDL_BlitScaled(ForecastUnit(), nullptr, Destination, &mRect);}
 }
 
-
-void Unit::HandleMouseMotion(const SDL_MouseMotionEvent& E){
-    mLastX = E.x;
-    mLastY = E.y;
-    if (mStatus==Player1 || mStatus == Player2){return;}
-    if (mStatus == Empty) { mStatus = Hover;}
-    
-}
-
-void Unit::HandleMouseClick(const SDL_MouseButtonEvent& E, int& MoveNbr){
-    SDL_Event UnitPlayed{Events::UNIT_PLAYED};
+void Unit::HandleMouseClick(const SDL_MouseButtonEvent& E, int& CurrentMove){
+    SDL_Event UnitPlayed{Events::TURN_ENDED};
     UnitPlayed.motion.x = mCol;
     UnitPlayed.motion.y = mRow;
     SDL_PushEvent(&UnitPlayed);
-    (MoveNbr%2==0)? mStatus = Player1 : mStatus = Player2;
-    ++MoveNbr;
+    (CurrentMove%2==0)? mStatus = Player1 : mStatus = Player2;
 }

@@ -26,7 +26,7 @@ Board::Board(int UpperX, int UpperY, int ImgWidth, int ImgHeight)
     }
 }
 
-void Board::HandleEvent(const SDL_Event& E){
+void Board::HandleEvent(const SDL_Event& E, int& CurrentMove){
     //TODO : Improve use of mBoardState. Should not need to pass it back and forth to Unit
 
     // Contains the intersection currently under the mouse cursor
@@ -34,15 +34,6 @@ void Board::HandleEvent(const SDL_Event& E){
     int MouseRow;
     switch (E.type)
     {
-    case SDL_MOUSEMOTION: //only used for hover? if so, not needed anymore?
-        MouseCol = (E.motion.x - Config::MOUSE_X_SHIFT - mUpperX) / mCellWidth; 
-        MouseRow = (E.motion.y - Config::MOUSE_Y_SHIFT - mUpperY) / mCellHeight;
-        if (IsIntersectionValid(MouseRow, MouseCol)){
-            board[MouseRow][MouseCol].HandleMouseMotion(E.motion);
-            mLastCol = MouseCol;
-            mLastRow = MouseRow;
-        }
-        break;
     case SDL_MOUSEBUTTONDOWN:
         if (E.button.button == SDL_BUTTON_LEFT){
             MouseCol = (E.motion.x - mUpperX) / mCellWidth;
@@ -50,23 +41,22 @@ void Board::HandleEvent(const SDL_Event& E){
             
             if(IsMoveLegal(MouseRow, MouseCol)){ // check that mouse is within bounds
                 if (mBoardState[MouseRow][MouseCol] == Forecast){
-                    board[MouseRow][MouseCol].HandleMouseClick(E.button, mMoveNbr);
+                    board[MouseRow][MouseCol].HandleMouseClick(E.button, CurrentMove);
                 };
             }
         }
         break;
     default:
-        if (E.type == Events::UNIT_PLAYED){
+        if (E.type == Events::TURN_ENDED){
             // check player of previous move and fill the board with their unit
-                (mMoveNbr-1)%2==0 ? mBoardState[E.motion.y][E.motion.x]=Player1
+                (CurrentMove-1)%2==0 ? mBoardState[E.motion.y][E.motion.x]=Player1
                             : mBoardState[E.motion.y][E.motion.x]=Player2;
                 Status temp = mPlayerThisTurn;
                 mPlayerThisTurn = mOpponent;
                 mOpponent = temp;
                 ForecastResetter();
 
-        } else if (E.type == Events::BLUE_PASSED || E.type == Events::RED_PASSED){
-            ++mMoveNbr;
+        } else if (E.type == Events::P1_PASSED || E.type == Events::P2_PASSED){
         } else if (E.type==Events::CARD_SELECTED){
         Forecaster(E.button.button);
         } else if(E.type == Events::CARD_UNSELECTED){

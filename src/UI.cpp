@@ -67,10 +67,12 @@ void UI::DrawCard(Card& spot, Player* Player){
     
 }
 
-void UI::HandleEvent(const SDL_Event& E){ HandleEvent(E, mCurrentPlayer); }
-void UI::HandleEvent(const SDL_Event& E, Player* Player){
-    // card in preview spot was played
-    if(E.type == Events::UNIT_PLAYED){
+void UI::HandleEvent(const SDL_Event& E, int& CurrentMove){ HandleEvent(E, mCurrentPlayer, CurrentMove); }
+void UI::HandleEvent(const SDL_Event& E, Player* Player, int& CurrentMove){
+    
+    if(E.type == Events::TURN_ENDED){ // other player turn, should change the color
+        CurrentMove%2 == 0  ? mPassButton.SetColor(Colors::BlueButton)
+                            : mPassButton.SetColor(Colors::RedButton);
         Player->mPreviewSpot.mIsActive = false;
         Player->mPreviewSpot.mIsShown = false;
         Player->mGraveyardPile[Player->mCardIndex-1] = Player->mPreviewSpot.mID; //-1 because the discard is one card late compared to the draw
@@ -81,39 +83,33 @@ void UI::HandleEvent(const SDL_Event& E, Player* Player){
             spot.mIsShown = true;
         }
         SDL_Event ChangeScreen{Events::CHANGE_SCENE};
-        mCurrentMove%2==0 ? ChangeScreen.motion.which = P2_TRANSITION
-                          : ChangeScreen.motion.which = P1_TRANSITION;
-        mCurrentMove%2==0 ? mPassButton.SetColor(Colors::RedButton)
-                          : mPassButton.SetColor(Colors::BlueButton);
+        CurrentMove%2 == 0 ? ChangeScreen.motion.which = P1_TRANSITION
+                          : ChangeScreen.motion.which = P2_TRANSITION;
         SDL_PushEvent(&ChangeScreen);
-        ++mCurrentMove;
-        mCurrentPlayer = &mPlayers[mCurrentMove%2];
+        mCurrentPlayer = &mPlayers[CurrentMove%2];
         
-    } else if (E.type == SDL_MOUSEBUTTONDOWN){
-        SDL_GetMouseState(&mXStart, &mYStart);
+    } else if (E.type == SDL_MOUSEBUTTONDOWN){ // clicked on something
         mMousePressed = true;
-        mClickedOnHand=false;
-        if (mPassButton.IsWithinBounds(E.motion.x, E.motion.y) && E.button.button == SDL_BUTTON_LEFT){
-            if (mCurrentMove%2==0){
-                SDL_Event Pass {Events::BLUE_PASSED};
+        if (mPassButton.IsWithinBounds(E.motion.x, E.motion.y)
+            && E.button.button == SDL_BUTTON_LEFT){
+            SDL_Event EndTurn{Events::TURN_ENDED};
+            SDL_PushEvent(&EndTurn);
+            if (CurrentMove%2 == 0){
+                SDL_Event Pass {Events::P1_PASSED};
                 SDL_PushEvent(&Pass);
                 SDL_Event ChangeScreen{Events::CHANGE_SCENE};
                 ChangeScreen.motion.which = P2_TRANSITION;
                 SDL_PushEvent(&ChangeScreen);
-                mPassButton.SetColor(Colors::RedButton);
-                ++mCurrentMove;
-                mCurrentPlayer = &mPlayers[mCurrentMove%2];
             } else{
-                SDL_Event Pass {Events::RED_PASSED};
+                SDL_Event Pass {Events::P2_PASSED};
                 SDL_PushEvent(&Pass);
                 SDL_Event ChangeScreen{Events::CHANGE_SCENE};
                 ChangeScreen.motion.which = P1_TRANSITION;
                 SDL_PushEvent(&ChangeScreen);
-                mPassButton.SetColor(Colors::BlueButton);
-                ++mCurrentMove;
-                mCurrentPlayer = &mPlayers[mCurrentMove%2];
             }
+
         }
+        mClickedOnHand = false;
         for (Card& spot : Player->mCardSpots){ 
             if(spot.mIsActive 
             && !spot.mIsEmpty
@@ -149,9 +145,7 @@ void UI::HandleEvent(const SDL_Event& E, Player* Player){
             SDL_PushEvent(&CardUnselected);
 
         }
-    } else if (E.type == SDL_MOUSEMOTION && mMousePressed){
-        SDL_GetMouseState(&mXEnd, &mYEnd);
-    } else if (E.type == SDL_MOUSEBUTTONUP && mMousePressed){
+    } else if (E.type == SDL_MOUSEBUTTONUP && mMousePressed){ // stopped clicking
         mMousePressed = false;
     }
     
