@@ -4,12 +4,12 @@
 
 
 #include "Screen.h"
-#include "../Events.h"
-#include "../Image.h"
-#include "../Text.h"
 #include "../Button.h"
-#include "../Scene.h"
+#include "../Events.h"
 #include "../Global.h"
+#include "../Image.h"
+#include "../Scene.h"
+#include "../Text.h"
 
 class TutorialScreen : public Screen{
     public:
@@ -17,8 +17,8 @@ class TutorialScreen : public Screen{
     Image mBackground[8];
     int mSlideIndex{0};
     Text mMessage[8];
-    TextButton mPreviousButton{"<- Previous", {710,700, 300,60}, {82,178,170}}; // TODO: make this dynamic when multiple screen resolutions are available
-    TextButton mNextButton{"Next ->", {1060,700, 300,60}, {82,178,170}};
+    TextButton mPreviousButton{"<- Previous", {710,700, 300,60},  Colors::BlueButton}; // TODO: make this dynamic when multiple screen resolutions are available
+    TextButton mNextButton{"Next ->",         {1060,700, 300,60}, Colors::BlueButton};
 
     void Render(SDL_Surface* Surface);
     void Update();

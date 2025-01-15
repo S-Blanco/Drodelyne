@@ -20,6 +20,7 @@ namespace GameSetting{
 
 namespace Colors{
     inline SDL_Color BlueButton {58,137,220};
+    inline SDL_Color DarkBlueButton {2,51,101};
     inline SDL_Color RedButton {255,80,52};
 //     // https://paletton.com/#uid=53y0k0kMHXunrVSudX5WGF0UArj
 //     SDL_Color Primary[5]{{76,166,241},{29,147,244},{7,137,245},{2,106,193},{2,78,140}};

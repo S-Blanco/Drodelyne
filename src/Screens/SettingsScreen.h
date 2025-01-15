@@ -4,9 +4,10 @@
 
 
 #include "Screen.h"
-#include "../Events.h"
-#include "../Image.h"
 #include "../Button.h"
+#include "../Events.h"
+#include "../Global.h"
+#include "../Image.h"
 #include "../Layout.h"
 #include "../Scene.h"
 
@@ -26,9 +27,9 @@ class SettingsScreen : public Screen{
                          mVolume * mVolumeBarWidth / mNbrVolumeStep, 80,
                          {40,150,255}};
 
-    TextButton mSoundDownButton{"-", {(Layout::ScreenWidth-50)/3,250,50,80}, {10,50,100}};
-    TextButton mSoundUpButton{"+", {2*(Layout::ScreenWidth-50)/3,250,50,80}, {10,50,100}};
-    TextButton mBackButton{"Back",   {(Layout::ScreenWidth-250)/2,500,250,80}, {20,100,200}};
+    TextButton mSoundDownButton{"-", {(Layout::ScreenWidth-50)/3,250,50,80},   Colors::DarkBlueButton};
+    TextButton mSoundUpButton{"+",   {2*(Layout::ScreenWidth-50)/3,250,50,80}, Colors::DarkBlueButton};
+    TextButton mBackButton{"Back",   {(Layout::ScreenWidth-250)/2,500,250,80}, Colors::BlueButton};
 
     void Render(SDL_Surface* Surface);
     void Update();
