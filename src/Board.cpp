@@ -35,7 +35,6 @@ void Board::HandleEvent(const SDL_Event& E){
     switch (E.type)
     {
     case SDL_MOUSEMOTION: //only used for hover? if so, not needed anymore?
-        mHasMoved = true;
         MouseCol = (E.motion.x - Config::MOUSE_X_SHIFT - mUpperX) / mCellWidth; 
         MouseRow = (E.motion.y - Config::MOUSE_Y_SHIFT - mUpperY) / mCellHeight;
         if (IsIntersectionValid(MouseRow, MouseCol)){
@@ -81,7 +80,7 @@ void Board::Render(SDL_Surface* Surface){
     for (int i=0; i<mSize; ++i){
         for (int j=0; j<mSize; ++j){
             if (mBoardState[i][j]!=Empty){
-                board[i][j].Render(Surface, &mHasMoved);
+                board[i][j].Render(Surface);
             }
         }
     }
@@ -89,13 +88,6 @@ void Board::Render(SDL_Surface* Surface){
 
 bool Board::IsIntersectionValid(int row, int col){ return (row >= 0 && row < mSize && col >= 0 && col < mSize); }
 
-/*
-    * Ensure that the hover image stays in place even if the mouse hasn't move this frame
-*/
-void Board::CheckHover(){
-    if (!mHasMoved && board[mLastRow][mLastCol].mStatus==Empty)
-        board[mLastRow][mLastCol].mStatus = Hover;
-}
 
 bool Board::IsMoveLegal(int row, int col){
     if(!IsIntersectionValid(row, col)) { return false;}

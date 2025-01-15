@@ -24,12 +24,11 @@ class Unit : public Rectangle{
 
         Status mStatus{Empty};
 
-        void Render(SDL_Surface* Destination, bool* Moved);
+        void Render(SDL_Surface* Destination);
 
         void HandleMouseMotion(const SDL_MouseMotionEvent& E);
         void HandleMouseClick(const SDL_MouseButtonEvent& E, int& TurnNbr);
 
-        bool HasMoved(const SDL_MouseMotionEvent& E);
 
     private:
         int mCol{0}; // Column number in the goban's 2D array 

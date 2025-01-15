@@ -21,7 +21,6 @@ class Board {
         void HandleEvent(const SDL_Event& E);
         void Render(SDL_Surface* Surface);
         bool IsIntersectionValid(int X, int Y);
-        void CheckHover();
 
         
 
@@ -32,7 +31,6 @@ class Board {
         int mUpperY{54};
         int mEdgeWidth{5};
         static const int mSize{19};
-        bool mHasMoved{true};
 
         int mLastCol{0};
         int mLastRow{0};
