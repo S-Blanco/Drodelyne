@@ -99,8 +99,14 @@ int main(int argc, char** argv) {
     StartScreen Start{"../assets/img/screens/P1_turn.png"};
     GameScreen P1Game{{XStart, YStart, EmptyBoardWidth, EmptyBoardHeight}};
     std::cout << std::format("GameScreen characteristics : {} {}  - {} {}", XStart, YStart, EmptyBoardWidth, EmptyBoardHeight) << std::endl;
-    TransitionScreen P1Transition{"../assets/img/screens/P2_turn.png", "Press space to continue", {100,100,500,500}, GAME};
-    TransitionScreen P2Transition{"../assets/img/screens/P1_turn.png", "Press space to continue", {100,100,500,500}, GAME};
+    TransitionScreen P1Transition{"../assets/img/screens/P1_turn.png",
+                                  "Press space to start your turn",
+                                  {DM.w/2 - 250, DM.h/3, 500, 500},
+                                  GAME};
+    TransitionScreen P2Transition{"../assets/img/screens/P2_turn.png",
+                                  "Press space to start your turn",
+                                  {DM.w/2 - 250, DM.h/3, 500, 500},
+                                  GAME};
     TutorialScreen Tutorial{TutosImg, TutosText, TutosRect};
     SettingsScreen Settings{"../assets/img/screens/P1_turn.png"};
 
@@ -112,7 +118,7 @@ int main(int argc, char** argv) {
     ScenesPtr[5] = &Settings;
     
     int SceneIndex{0};
-    Orchestra Conductor("../assets/sounds/Beattle Ready.mp3",
+    Orchestra Conductor("../assets/sounds/Battle Ready.mp3",
                         "../assets/sounds/validPlay.wav",
                         "../assets/sounds/invalidPlay.wav");
     Conductor.PlayMusic();
