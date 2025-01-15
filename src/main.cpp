@@ -118,9 +118,7 @@ int main(int argc, char** argv) {
     ScenesPtr[5] = &Settings;
     
     int SceneIndex{0};
-    Orchestra Conductor("../assets/sounds/Battle Ready.mp3",
-                        "../assets/sounds/validPlay.wav",
-                        "../assets/sounds/invalidPlay.wav");
+    Orchestra Conductor("../assets/sounds/Battle Ready.mp3");
     Conductor.PlayMusic();
     
     SDL_Event Event;

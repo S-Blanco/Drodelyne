@@ -13,7 +13,7 @@
 
 class Orchestra{
     public:
-        Orchestra(std::string Background, std::string PlaySound, std::string IllegalMoveSound);
+        Orchestra(std::string Background);
         ~Orchestra();
         Orchestra(const Orchestra&) = delete;
         Orchestra& operator=(const Orchestra&) = delete;
