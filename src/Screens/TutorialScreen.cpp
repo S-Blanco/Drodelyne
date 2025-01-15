@@ -25,23 +25,22 @@ void TutorialScreen::HandleEvent(SDL_Event& E){
         && E.button.button == SDL_BUTTON_LEFT){
         
         if (mPreviousButton.IsWithinBounds(E.motion.x, E.motion.y)){
-            if (mSlideIndex==0){
+            if (mSlideIndex == 0){
                 SDL_Event ChangeScene{Events::CHANGE_SCENE};
                 ChangeScene.motion.which = START;
                 SDL_PushEvent(&ChangeScene);
             }
             else {
-                std::cout << std::format("Reduce index") << std::endl;
                 --mSlideIndex;
             }
         }else if (mNextButton.IsWithinBounds(E.motion.x, E.motion.y)){
-            if (mSlideIndex==7){
+            if (mSlideIndex == 7){
                 SDL_Event ChangeScene{Events::CHANGE_SCENE};
                 ChangeScene.motion.which = START;
                 SDL_PushEvent(&ChangeScene);
+                mSlideIndex = 0;
             }
             else {
-                std::cout << std::format("Augment index") << std::endl;
                 ++mSlideIndex;
             }
 
