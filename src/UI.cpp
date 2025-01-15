@@ -83,6 +83,8 @@ void UI::HandleEvent(const SDL_Event& E, Player* Player){
         SDL_Event ChangeScreen{Events::CHANGE_SCENE};
         mCurrentMove%2==0 ? ChangeScreen.motion.which = P2_TRANSITION
                           : ChangeScreen.motion.which = P1_TRANSITION;
+        mCurrentMove%2==0 ? mPassButton.SetColor(Colors::RedButton)
+                          : mPassButton.SetColor(Colors::BlueButton);
         SDL_PushEvent(&ChangeScreen);
         ++mCurrentMove;
         mCurrentPlayer = &mPlayers[mCurrentMove%2];
@@ -93,21 +95,21 @@ void UI::HandleEvent(const SDL_Event& E, Player* Player){
         mClickedOnHand=false;
         if (mPassButton.IsWithinBounds(E.motion.x, E.motion.y) && E.button.button == SDL_BUTTON_LEFT){
             if (mCurrentMove%2==0){
-                SDL_Event Pass {Events::BLACK_PASSED};
+                SDL_Event Pass {Events::BLUE_PASSED};
                 SDL_PushEvent(&Pass);
                 SDL_Event ChangeScreen{Events::CHANGE_SCENE};
-                mCurrentMove%2==0 ? ChangeScreen.motion.which = P2_TRANSITION
-                                  : ChangeScreen.motion.which = P1_TRANSITION;
+                ChangeScreen.motion.which = P2_TRANSITION;
                 SDL_PushEvent(&ChangeScreen);
+                mPassButton.SetColor(Colors::RedButton);
                 ++mCurrentMove;
                 mCurrentPlayer = &mPlayers[mCurrentMove%2];
             } else{
-                SDL_Event Pass {Events::WHITE_PASSED};
+                SDL_Event Pass {Events::RED_PASSED};
                 SDL_PushEvent(&Pass);
                 SDL_Event ChangeScreen{Events::CHANGE_SCENE};
-                mCurrentMove%2==0 ? ChangeScreen.motion.which = P2_TRANSITION
-                                  : ChangeScreen.motion.which = P1_TRANSITION;
+                ChangeScreen.motion.which = P1_TRANSITION;
                 SDL_PushEvent(&ChangeScreen);
+                mPassButton.SetColor(Colors::BlueButton);
                 ++mCurrentMove;
                 mCurrentPlayer = &mPlayers[mCurrentMove%2];
             }

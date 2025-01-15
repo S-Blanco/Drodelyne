@@ -23,8 +23,8 @@ namespace Events{
 
     extern const Uint32 STOP_ANIMATION;
 
-    extern const Uint32 WHITE_PASSED;
-    extern const Uint32 BLACK_PASSED;
+    extern const Uint32 RED_PASSED;
+    extern const Uint32 BLUE_PASSED;
     extern const Uint32 SCORE_GAME;
 }
  

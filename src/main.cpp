@@ -53,7 +53,7 @@ int init_sdl(){
 int main(int argc, char** argv) {
 
     init_sdl();
-    
+
     bool RightClickAlreadyPressed{false};
     bool LeftClickAlreadyPressed{false};
     bool Player1HasPassed{false};
@@ -128,10 +128,9 @@ int main(int argc, char** argv) {
     while (!shouldQuit) {
 
         // Framerate limiter
-        if (SDL_GetTicks64() >  (CheckTime + 1000/Config::TARGET_FPS)){
+        if (SDL_GetTicks64() >  (CheckTime + 1000/(Config::TARGET_FPS+1))){ //+1 since it is an upper limit
             CheckTime = SDL_GetTicks64();
             ++FPS;
-
             now = time(NULL);
             if(now!=last)
                 {
@@ -139,8 +138,6 @@ int main(int argc, char** argv) {
                 last = now;
                 FPS = 0;
                 }
-
-        
 
             // Event processing loop
             while(SDL_PollEvent(&Event)){
@@ -172,7 +169,7 @@ int main(int argc, char** argv) {
                     }else if (Event.button.button == SDL_BUTTON_RIGHT){
                         RightClickAlreadyPressed = false;
                     }
-                } else if(Event.type == Events::BLACK_PASSED){
+                } else if(Event.type == Events::BLUE_PASSED){
                     if (Player2HasPassed){
                         // score game
                         std::cout << "Score the game" << std::endl;
@@ -182,8 +179,9 @@ int main(int argc, char** argv) {
                     } else{
                         Player1HasPassed = true;
                         std::cout << "P1 has passed" << std::endl;
+                        ScenesPtr[SceneIndex]->HandleEvent(Event);
                     }
-                } else if(Event.type == Events::WHITE_PASSED){
+                } else if(Event.type == Events::RED_PASSED){
                     if (Player1HasPassed){
                         // score game
                         std::cout << "Score the game" << std::endl;
@@ -192,6 +190,7 @@ int main(int argc, char** argv) {
                     } else{
                         Player2HasPassed = true;
                         std::cout << "P2 has passed" << std::endl;
+                        ScenesPtr[SceneIndex]->HandleEvent(Event);
                     }
                 } else if (Event.type == Events::UNIT_PLAYED){
                     Player1HasPassed = false;
@@ -205,10 +204,11 @@ int main(int argc, char** argv) {
             // Rendering
             GameWindow.Render();
             ScenesPtr[SceneIndex]->Render(GameWindow.GetSurface());
+
             GameWindow.Update();
 
         } else {
-            SDL_Delay(5);
+            SDL_Delay(2); // millisecond delay for frame limitation
         }
     }
     Mix_Quit();

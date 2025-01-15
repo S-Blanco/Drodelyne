@@ -57,12 +57,7 @@ void Board::HandleEvent(const SDL_Event& E){
         }
         break;
     default:
-        if (E.type == Events::HOVER_EVENT){
-            if (mBoardState[E.motion.y][E.motion.x] == Hover){
-                mBoardState[E.motion.y][E.motion.x] = Empty;
-            }
-            board[E.motion.y][E.motion.x].HandleMouseMotion(E.motion);
-        }else if (E.type == Events::UNIT_PLAYED){
+        if (E.type == Events::UNIT_PLAYED){
             // check player of previous move and fill the board with their unit
                 (mMoveNbr-1)%2==0 ? mBoardState[E.motion.y][E.motion.x]=Player1
                             : mBoardState[E.motion.y][E.motion.x]=Player2;
@@ -71,9 +66,11 @@ void Board::HandleEvent(const SDL_Event& E){
                 mOpponent = temp;
                 ForecastResetter();
 
-        }else if (E.type==Events::CARD_SELECTED){
+        } else if (E.type == Events::BLUE_PASSED || E.type == Events::RED_PASSED){
+            ++mMoveNbr;
+        } else if (E.type==Events::CARD_SELECTED){
         Forecaster(E.button.button);
-        }else if(E.type == Events::CARD_UNSELECTED){
+        } else if(E.type == Events::CARD_UNSELECTED){
             ForecastResetter();
         }
     }

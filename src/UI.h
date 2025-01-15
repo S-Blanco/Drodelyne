@@ -64,7 +64,7 @@ class UI {
                                     Layout::TopHandY + 2*Layout::CardHeight + Layout::InterRowY + Layout::PassButtonMarginY ,
                                     2*Layout::CardWidth + Layout::CardMarginX,
                                     Layout::PassButtonHeight},
-                                {58,137,220}};
+                                Colors::BlueButton};
 
         bool mClickedOnHand{false};
         
