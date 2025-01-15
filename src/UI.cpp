@@ -1,5 +1,4 @@
 #include "UI.h"
-#include "Layout.h" // included here because when included in UI.h, multiple include error even with pragma once?
 
 UI::UI(std::string Name1, std::array<std::string, mDeckSize> Player1DeckFile, std::array<int, 10> Player1DeckID, std::string P1DrawFile,
        std::string Name2, std::array<std::string, mDeckSize> Player2DeckFile, std::array<int, 10> Player2DeckID, std::string P2DrawFile)
@@ -7,18 +6,9 @@ UI::UI(std::string Name1, std::array<std::string, mDeckSize> Player1DeckFile, st
                   {Name2, Player2DeckFile, Player2DeckID, P2DrawFile}},
          mWrite{225, {20, 50, 500, 500}, " "}
     {
-        
         mCurrentPlayer = &mPlayers[0];
         SetupHand(&mPlayers[0]);
         SetupHand(&mPlayers[1]);
-        
-
-        // mDiscard.mIsActive = false;
-        // mDiscard.mIsVisible = false;
-
-        // mCancel.mIsActive = false;
-        // mCancel.mIsVisible = false;
-
     }
     
 void UI::SetupHand(Player* Player){
@@ -79,17 +69,11 @@ void UI::DrawCard(Card& spot, Player* Player){
 
 void UI::HandleEvent(const SDL_Event& E){ HandleEvent(E, mCurrentPlayer); }
 void UI::HandleEvent(const SDL_Event& E, Player* Player){
-    
-    
     // card in preview spot was played
     if(E.type == Events::UNIT_PLAYED){
         Player->mPreviewSpot.mIsActive = false;
         Player->mPreviewSpot.mIsShown = false;
-        // mDiscard.mIsActive = false;
-        // mDiscard.mIsVisible = false;
-        // mCancel.mIsActive = false;
-        // mCancel.mIsVisible = false;
-            Player->mGraveyardPile[Player->mCardIndex-1] = Player->mPreviewSpot.mID; //-1 because the discard is one card late compared to the draw
+        Player->mGraveyardPile[Player->mCardIndex-1] = Player->mPreviewSpot.mID; //-1 because the discard is one card late compared to the draw
         for (Card& spot : Player->mCardSpots){
             if (spot.mIsEmpty){ DrawCard(spot, Player); }
             spot.mIsEmpty = false;
@@ -104,36 +88,30 @@ void UI::HandleEvent(const SDL_Event& E, Player* Player){
         mCurrentPlayer = &mPlayers[mCurrentMove%2];
         
     } else if (E.type == SDL_MOUSEBUTTONDOWN){
+        SDL_GetMouseState(&mXStart, &mYStart);
+        mMousePressed = true;
         mClickedOnHand=false;
-
-        // if (mDiscard.mIsActive && mDiscard.IsWithinBounds(E.motion.x, E.motion.y)){
-        //     SDL_Event CardSelected{Events::CARD_SELECTED};
-        //     CardSelected.button.button = 5; // ID of free placement, TODO : put enum instead
-        //     SDL_PushEvent(&CardSelected);
-                
-        //     Player->mObligation -= 5 ;
-        //     mDiscard.mIsActive = false;
-
-        // }
-        // if (mCancel.mIsActive && mCancel.IsWithinBounds(E.motion.x, E.motion.y)){
-
-        //     Player->mPreviewSpot.mIsActive = false;
-        //     Player->mPreviewSpot.mIsShown = false;
-        //     for (Card& Card : Player->mCardSpots){
-        //         Card.mIsActive = true;
-        //         Card.mIsShown  = true;
-        //         Card.mIsEmpty  = false;
-        //     }
-        //     SDL_Event CardUnselected{Events::CARD_UNSELECTED};
-        //     SDL_PushEvent(&CardUnselected);
-
-        //     // this will move since it is the clicking of the button that trigger the visibility/activity
-        //     mDiscard.mIsActive = false;
-        //     mDiscard.mIsVisible = false;
-        //     mCancel.mIsActive = false;
-        //     mCancel.mIsVisible = false;
-        // }
-        // Check if click on a card in the player's hand
+        if (mPassButton.IsWithinBounds(E.motion.x, E.motion.y) && E.button.button == SDL_BUTTON_LEFT){
+            if (mCurrentMove%2==0){
+                SDL_Event Pass {Events::BLACK_PASSED};
+                SDL_PushEvent(&Pass);
+                SDL_Event ChangeScreen{Events::CHANGE_SCENE};
+                mCurrentMove%2==0 ? ChangeScreen.motion.which = P2_TRANSITION
+                                  : ChangeScreen.motion.which = P1_TRANSITION;
+                SDL_PushEvent(&ChangeScreen);
+                ++mCurrentMove;
+                mCurrentPlayer = &mPlayers[mCurrentMove%2];
+            } else{
+                SDL_Event Pass {Events::WHITE_PASSED};
+                SDL_PushEvent(&Pass);
+                SDL_Event ChangeScreen{Events::CHANGE_SCENE};
+                mCurrentMove%2==0 ? ChangeScreen.motion.which = P2_TRANSITION
+                                  : ChangeScreen.motion.which = P1_TRANSITION;
+                SDL_PushEvent(&ChangeScreen);
+                ++mCurrentMove;
+                mCurrentPlayer = &mPlayers[mCurrentMove%2];
+            }
+        }
         for (Card& spot : Player->mCardSpots){ 
             if(spot.mIsActive 
             && !spot.mIsEmpty
@@ -149,11 +127,6 @@ void UI::HandleEvent(const SDL_Event& E, Player* Player){
                 SDL_Event CardSelected{Events::CARD_SELECTED};
                 CardSelected.button.button = spot.mID;
                 SDL_PushEvent(&CardSelected);
-                
-                // mDiscard.mIsActive = true;
-                // mDiscard.mIsVisible = true;
-                // mCancel.mIsActive = true;
-                // mCancel.mIsVisible = true;
                 
                 break;
             }
@@ -173,20 +146,18 @@ void UI::HandleEvent(const SDL_Event& E, Player* Player){
             SDL_Event CardUnselected{Events::CARD_UNSELECTED};
             SDL_PushEvent(&CardUnselected);
 
-            // this will move since it is the clicking of the button that trigger the visibility/activity
-            // mDiscard.mIsActive = false;
-            // mDiscard.mIsVisible = false;
-            // mCancel.mIsActive = false;
-            // mCancel.mIsVisible = false;
         }
+    } else if (E.type == SDL_MOUSEMOTION && mMousePressed){
+        SDL_GetMouseState(&mXEnd, &mYEnd);
+    } else if (E.type == SDL_MOUSEBUTTONUP && mMousePressed){
+        mMousePressed = false;
     }
     
 }
 
 void UI::Render(SDL_Surface* Surface){
     Render(Surface, mCurrentPlayer);
-    // mDiscard.Render(Surface);
-    // mCancel.Render(Surface);
+    mPassButton.Render(Surface);
 }
 
 void UI::Render(SDL_Surface* Surface, Player* Player){

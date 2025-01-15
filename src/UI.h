@@ -18,10 +18,10 @@
 #include "Scene.h"
 #include "Button.h"
 #include "Text.h"
+#include "Layout.h"
 
 /*
  * Handles the deck, the player's hand and the preview spot
- // TODO : ADD Mulligan mechanic
 */
 class UI {
     public:
@@ -37,8 +37,6 @@ class UI {
 
     protected:
 
-        // Button mDiscard {950, 80, 180, 80, {217,150,0,255}};
-        // Button mCancel {1150, 80, 180, 80, {177,122,0,255}};
         int mCurrentMove{0};
         Player* mCurrentPlayer{nullptr};
         void Render(SDL_Surface* Surface, Player* Player);
@@ -54,6 +52,20 @@ class UI {
         int mCardGapX;
         int mCardGapY;
         
+        bool mMousePressed{false};
+        int mXStart;
+        int mYStart;
+        int mXEnd;
+        int mYEnd;
+        
+
+        TextButton mPassButton {"Pass",
+                                {   Layout::TopHandX,
+                                    Layout::TopHandY + 2*Layout::CardHeight + Layout::InterRowY + Layout::PassButtonMarginY ,
+                                    2*Layout::CardWidth + Layout::CardMarginX,
+                                    Layout::PassButtonHeight},
+                                {58,137,220}};
+
         bool mClickedOnHand{false};
         
         Player mPlayers[2];

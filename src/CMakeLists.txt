@@ -4,6 +4,7 @@ set(CMAKE_CXX_STANDARD 20)
 project(Drodelyne VERSION 1.0.0)
 
 add_executable(Game
+               Animation.cpp
                Board.cpp               
                Button.cpp
                Card.cpp
@@ -14,7 +15,6 @@ add_executable(Game
                Orchestra.cpp
                Player.cpp
                Rectangle.cpp
-               Screens/DeckScreen.cpp
                Screens/GameScreen.cpp
                Screens/SettingsScreen.cpp
                Screens/StartScreen.cpp

@@ -22,7 +22,6 @@
 #include "Board.h"
 #include "Orchestra.h"
 #include "Scene.h"
-#include "Screens/DeckScreen.h"
 #include "Screens/GameScreen.h"
 #include "Screens/SettingsScreen.h"
 #include "Screens/StartScreen.h"
@@ -31,8 +30,7 @@
 #include "Text.h"
 #include "DrawPile.h"
 
-int main(int argc, char** argv) {
-
+int init_sdl(){
     if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER | SDL_INIT_EVENTS)<0){
         std::cout << "[Error] initializing SDL: " << SDL_GetError();
         return -1;
@@ -50,9 +48,16 @@ int main(int argc, char** argv) {
         std::cout << "[Error] initializing SDL_mixer: " << Mix_GetError();
         return -1;
     }
+    return 0;
+}
+int main(int argc, char** argv) {
 
+    init_sdl();
+    
     bool RightClickAlreadyPressed{false};
     bool LeftClickAlreadyPressed{false};
+    bool Player1HasPassed{false};
+    bool Player2HasPassed{false};
 
     // get screen size to start window
     SDL_DisplayMode DM;
@@ -62,6 +67,7 @@ int main(int argc, char** argv) {
     int XStart = (DM.w - 1.3*EmptyBoardWidth)/2;
     int YStart = (DM.h - EmptyBoardHeight)/2;
     Window GameWindow(DM.w, DM.h);
+    SDL_WarpMouseInWindow(GameWindow.GetWindow(), DM.w/2, DM.h/5);
 
     std::string TutosImg[8] = {"../assets/img/screens/tuto1_1.png", 
                              "../assets/img/screens/tuto1_2.png", 
@@ -89,7 +95,7 @@ int main(int argc, char** argv) {
                              {950,200,350,600},
                              {950,200,350,300},
                              {950,200,350,300}};
-    std::array<Screen*, 7> ScenesPtr;
+    std::array<Screen*, 6> ScenesPtr;
     StartScreen Start{"../assets/img/screens/P1_turn.png"};
     GameScreen P1Game{{XStart, YStart, EmptyBoardWidth, EmptyBoardHeight}};
     std::cout << std::format("GameScreen characteristics : {} {}  - {} {}", XStart, YStart, EmptyBoardWidth, EmptyBoardHeight) << std::endl;
@@ -97,7 +103,6 @@ int main(int argc, char** argv) {
     TransitionScreen P2Transition{"../assets/img/screens/P1_turn.png", "Press space to continue", {100,100,500,500}, GAME};
     TutorialScreen Tutorial{TutosImg, TutosText, TutosRect};
     SettingsScreen Settings{"../assets/img/screens/P1_turn.png"};
-    DeckScreen Deck{"../assets/img/screens/deck.jpg", "Deck building screen",{0,0,1366, 768}};
 
     ScenesPtr[0] = &Start;
     ScenesPtr[1] = &P1Game;
@@ -105,10 +110,9 @@ int main(int argc, char** argv) {
     ScenesPtr[3] = &P2Transition;
     ScenesPtr[4] = &Tutorial;
     ScenesPtr[5] = &Settings;
-    ScenesPtr[6] = &Deck;
     
     int SceneIndex{0};
-    Orchestra Conductor("../assets/sounds/Battle Ready.mp3",
+    Orchestra Conductor("../assets/sounds/Beattle Ready.mp3",
                         "../assets/sounds/validPlay.wav",
                         "../assets/sounds/invalidPlay.wav");
     Conductor.PlayMusic();
@@ -168,8 +172,33 @@ int main(int argc, char** argv) {
                     }else if (Event.button.button == SDL_BUTTON_RIGHT){
                         RightClickAlreadyPressed = false;
                     }
+                } else if(Event.type == Events::BLACK_PASSED){
+                    if (Player2HasPassed){
+                        // score game
+                        std::cout << "Score the game" << std::endl;
+                        SDL_Event Quit{SDL_QUIT};
+                        SDL_PushEvent(&Quit);
+                        
+                    } else{
+                        Player1HasPassed = true;
+                        std::cout << "P1 has passed" << std::endl;
+                    }
+                } else if(Event.type == Events::WHITE_PASSED){
+                    if (Player1HasPassed){
+                        // score game
+                        std::cout << "Score the game" << std::endl;
+                        SDL_Event Quit{SDL_QUIT};
+                        SDL_PushEvent(&Quit);
+                    } else{
+                        Player2HasPassed = true;
+                        std::cout << "P2 has passed" << std::endl;
+                    }
+                } else if (Event.type == Events::UNIT_PLAYED){
+                    Player1HasPassed = false;
+                    Player2HasPassed = false;
+                    ScenesPtr[SceneIndex]->HandleEvent(Event);
                 } else {
-                   ScenesPtr[SceneIndex]->HandleEvent(Event);
+                    ScenesPtr[SceneIndex]->HandleEvent(Event);
                 }
             }
             
