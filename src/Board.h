@@ -33,8 +33,12 @@ class Board {
         void Forecaster(int CardID, bool WasSacrificed=false);
         void ForecastResetter();
 
-        Status mBoardState[mSize][mSize];
-        Status mBoardForecast[GameSetting::HandSize][mSize][mSize];
+        /*  
+            Status mBoardForecast[GameSetting::HandSize][mSize][mSize];
+            Curently unused
+            Will be used later to keep tab of every places accessible with the current hand.
+            If no space is accessible, ony then do we allow card sacrifice
+        */
         
         Status mPlayerThisTurn;
         Status mOpponent;
