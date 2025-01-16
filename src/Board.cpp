@@ -56,6 +56,10 @@ void Board::HandleEvent(const SDL_Event& E, int& CurrentMove){
                 mOpponent = temp;
                 ForecastResetter();
 
+        } else if (E.type == Events::P1_PASSED || E.type == Events::P2_PASSED){
+            Status temp = mPlayerThisTurn;
+            mPlayerThisTurn = mOpponent;
+            mOpponent = temp;
         } else if (E.type==Events::CARD_SELECTED){
             Forecaster(E.button.button);
         } else if(E.type == Events::CARD_UNSELECTED){
@@ -84,10 +88,10 @@ bool Board::IsMoveLegal(int row, int col){
     if (board[row][col].mStatus == Player1
     ||  board[row][col].mStatus == Player2) {return false;}
     
-    if (   board[row+1][col].mStatus == mOpponent
-        && board[row-1][col].mStatus == mOpponent
-        && board[row][col+1].mStatus == mOpponent
-        && board[row][col-1].mStatus == mOpponent){ 
+    if ((row > 18 && board[row+1][col].mStatus == mOpponent) &&
+        (row < 0  && board[row-1][col].mStatus == mOpponent) &&
+        (col < 18 && board[row][col+1].mStatus == mOpponent) &&
+        (col > 0  && board[row][col-1].mStatus == mOpponent)){ 
         // TODO: add illegal move sound event here
         return false; }
     return true;
