@@ -66,5 +66,4 @@ class UI {
 
         void SetupHand(Player* Player);
         void SwapGraveyardAndShuffle(Player* Player);
-
 };

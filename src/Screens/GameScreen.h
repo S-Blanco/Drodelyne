@@ -18,6 +18,9 @@ class GameScreen : public Screen{
     
     protected:
     int mCurrentMove{0};
+    bool mP1HasPassed{false};
+    bool mP2HasPassed{false};
+    
     UI mGameUI{"Alice", Player1DeckFile, Player1DeckID, "../assets/img/cards/card_p1.png",
                "Bob",   Player2DeckFile, Player2DeckID,"../assets/img/cards/card_p2.png"};
     Board mArena;

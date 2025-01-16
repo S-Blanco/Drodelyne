@@ -56,8 +56,6 @@ int main(int argc, char** argv) {
 
     bool RightClickAlreadyPressed{false};
     bool LeftClickAlreadyPressed{false};
-    bool Player1HasPassed{false};
-    bool Player2HasPassed{false};
 
     // get screen size to start window
     SDL_DisplayMode DM;
@@ -135,54 +133,38 @@ int main(int argc, char** argv) {
                 FPS = 0;
                 }
 
-            // Event processing loop
+// Event processing loop
             while(SDL_PollEvent(&Event)){
-                if (Event.type == SDL_QUIT
-                    || Event.key.keysym.sym == SDLK_ESCAPE) [[unlikely]]{
+
+                if (Event.type == SDL_QUIT || Event.key.keysym.sym == SDLK_ESCAPE) [[unlikely]]{
                     shouldQuit=true;
-                } else if (Event.type == Events::VOLUME_DOWN || Event.type == Events::VOLUME_UP)
-                {
+                } else if (Event.type == Events::VOLUME_DOWN || Event.type == Events::VOLUME_UP){
                     Conductor.HandleEvent(Event);
-                }else if (Event.type == Events::CHANGE_SCENE){
+                } else if (Event.type == Events::CHANGE_SCENE){
                     SceneIndex = Event.motion.which;
                 } else if (Event.type == SDL_MOUSEBUTTONDOWN){
+                    // This multiclick prevention should be at the button's level ?
                     if (Event.button.button == SDL_BUTTON_LEFT && !LeftClickAlreadyPressed){
                         LeftClickAlreadyPressed = true;
                         ScenesPtr[SceneIndex]->HandleEvent(Event);
-                    }else if (Event.button.button == SDL_BUTTON_RIGHT && !RightClickAlreadyPressed){
+                    } else if (Event.button.button == SDL_BUTTON_RIGHT && !RightClickAlreadyPressed){
                         RightClickAlreadyPressed = true;
                         ScenesPtr[SceneIndex]->HandleEvent(Event);
                     }
-                }else if (Event.type == SDL_MOUSEBUTTONUP){
+                } else if (Event.type == SDL_MOUSEBUTTONUP){
                     if (Event.button.button == SDL_BUTTON_LEFT){
                         LeftClickAlreadyPressed = false;
                     }else if (Event.button.button == SDL_BUTTON_RIGHT){
                         RightClickAlreadyPressed = false;
                     }
-                } else if(Event.type == Events::P1_PASSED){
-                    if (Player2HasPassed){ // both player passed, score the game
+                } else if(Event.type == Events::SCORE_GAME){
                         std::cout << "Scoring the game" << std::endl;
-                    } else{
-                        Player1HasPassed = true;
-                        ScenesPtr[SceneIndex]->HandleEvent(Event);
-                    }
-                } else if(Event.type == Events::P2_PASSED){
-                    if (Player1HasPassed){ // both player passed, score the game
-                        std::cout << "Scoring the game" << std::endl;
-                    } else{
-                        Player2HasPassed = true;
-                        ScenesPtr[SceneIndex]->HandleEvent(Event);
-                    }
-                } else if (Event.type == Events::TURN_ENDED){
-                    Player1HasPassed = false;
-                    Player2HasPassed = false;
-                    ScenesPtr[SceneIndex]->HandleEvent(Event);
-                } else {
+                } else{
                     ScenesPtr[SceneIndex]->HandleEvent(Event);
                 }
             }
             
-            // Rendering
+// Rendering
             GameWindow.Render();
             ScenesPtr[SceneIndex]->Render(GameWindow.GetSurface());
 

@@ -70,7 +70,7 @@ void UI::DrawCard(Card& spot, Player* Player){
 void UI::HandleEvent(const SDL_Event& E, int& CurrentMove){ HandleEvent(E, mCurrentPlayer, CurrentMove); }
 void UI::HandleEvent(const SDL_Event& E, Player* Player, int& CurrentMove){
     
-    if(E.type == Events::TURN_ENDED){ // other player turn, should change the color
+    if(E.type == Events::UNIT_PLAYED || E.type == Events::P1_PASSED || E.type == Events::P2_PASSED){ // other player turn, should change the color
         CurrentMove%2 == 0  ? mPassButton.SetColor(Colors::BlueButton)
                             : mPassButton.SetColor(Colors::RedButton);
         Player->mPreviewSpot.mIsActive = false;
@@ -92,8 +92,6 @@ void UI::HandleEvent(const SDL_Event& E, Player* Player, int& CurrentMove){
         mMousePressed = true;
         if (mPassButton.IsWithinBounds(E.motion.x, E.motion.y)
             && E.button.button == SDL_BUTTON_LEFT){
-            SDL_Event EndTurn{Events::TURN_ENDED};
-            SDL_PushEvent(&EndTurn);
             if (CurrentMove%2 == 0){
                 SDL_Event Pass {Events::P1_PASSED};
                 SDL_PushEvent(&Pass);

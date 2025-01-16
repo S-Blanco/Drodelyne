@@ -21,7 +21,7 @@ void Unit::Render(SDL_Surface* Destination){
 }
 
 void Unit::HandleMouseClick(const SDL_MouseButtonEvent& E, int& CurrentMove){
-    SDL_Event UnitPlayed{Events::TURN_ENDED};
+    SDL_Event UnitPlayed{Events::UNIT_PLAYED};
     UnitPlayed.motion.x = mCol;
     UnitPlayed.motion.y = mRow;
     SDL_PushEvent(&UnitPlayed);

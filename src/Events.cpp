@@ -1,7 +1,7 @@
 #include "Events.h"
 
 namespace Events{
-    const Uint32 TURN_ENDED{SDL_RegisterEvents(1)};
+    const Uint32 UNIT_PLAYED{SDL_RegisterEvents(1)};
     const Uint32 ILLEGAL_MOVE{SDL_RegisterEvents(1)};
     const Uint32 CARD_SELECTED{SDL_RegisterEvents(1)};
     const Uint32 CARD_UNSELECTED{SDL_RegisterEvents(1)};
