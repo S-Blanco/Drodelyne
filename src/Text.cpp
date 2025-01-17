@@ -2,7 +2,7 @@
 
 
 Text::Text(int WrapSize, std::string Content)
-    :mFont{TTF_OpenFont("Roboto-Medium.ttf", 56)},mContent{Content}, mWrapSize{WrapSize}
+    :mFont{TTF_OpenFont("../assets/fonts/Roboto-Medium.ttf", 56)},mContent{Content}, mWrapSize{WrapSize}
     {
         if(!mFont){
             std::cout << "Error loading font" << SDL_GetError() <<std::endl;
@@ -11,7 +11,7 @@ Text::Text(int WrapSize, std::string Content)
     }
 
 Text::Text(int WrapSize, SDL_Rect DestRect, std::string Content)
-:mDestRectangle{DestRect}, mFont{TTF_OpenFont("Roboto-Medium.ttf", 56)}, mContent{Content}, mWrapSize{WrapSize}
+:mDestRectangle{DestRect}, mFont{TTF_OpenFont("../assets/fonts/Roboto-Medium.ttf", 56)}, mContent{Content}, mWrapSize{WrapSize}
     {
           if(!mFont){
             std::cout << "Error loading font" << SDL_GetError() <<std::endl;
@@ -54,7 +54,7 @@ void Text::Render(SDL_Surface* DestSurface){
 }
 
 TTF_Font* Text::LoadFont(int FontSize){
-    TTF_Font* LoadedFont{TTF_OpenFont("Roboto-Medium.ttf", FontSize)};
+    TTF_Font* LoadedFont{TTF_OpenFont("../assets/fonts/Roboto-Medium.ttf", FontSize)};
     if(!LoadedFont){
         std::cout << "Error loading font : " << SDL_GetError() << std::endl;
     }
