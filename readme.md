@@ -27,10 +27,4 @@ The game should work if you recompile it on a Windows platform 🤞
 Sorry, here you're on your own currently but my guess is that it works the same as above.
 
 ## Attribution
-
-Music and sound effects :
-- background.wav taken from Japan_Koto_My_Amateur_Improv_Session_1.wav by RutgerMuller -- https://freesound.org/s/364807/ -- License: Creative Commons 0
-
-- validPlay.wav taken from 05505 Punching deploy shot.wav by Robinhood76 -- https://freesound.org/s/254079/ -- License: Attribution NonCommercial 4.0
-
-- invalidPlay.wav taken from DoorScan.wav by theshuggie -- https://freesound.org/s/371009/ -- License: Creative Commons 0
+See `assets/sounds/Attribution.txt`
