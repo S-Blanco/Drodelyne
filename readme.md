@@ -14,7 +14,7 @@ As this is a work in progress, the basic implementation is not yet completed so 
 
 ### on Linux
 - Download the project
-- Create a `Build`folder
+- Create a `Build` folder
 - Open a terminal in the `Build` folder and execute the command `cmake ../src/`
 - Once the previous command is executed, use the command `make`
 - Now, launch the game either by clicking the `Game` icon or by typing in the terminal `./Game` 
