@@ -14,7 +14,7 @@ void SettingsScreen::Render(SDL_Surface* Surface){
 void SettingsScreen::Update(){
     ;
 }
-void SettingsScreen::HandleEvent(SDL_Event& E){
+void SettingsScreen::HandleEvent(const SDL_Event& E){
     if (E.type == SDL_MOUSEBUTTONDOWN && E.button.button == SDL_BUTTON_LEFT){
         if (mSoundUpButton.IsWithinBounds(E.motion.x, E.motion.y)){
             if (mVolume < 10){

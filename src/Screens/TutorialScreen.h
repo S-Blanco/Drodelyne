@@ -19,5 +19,5 @@ class TutorialScreen : public Screen{
 
     void Render(SDL_Surface* Surface);
     void Update();
-    void HandleEvent(SDL_Event& E);
+    void HandleEvent(const SDL_Event& E);
 };

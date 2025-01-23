@@ -35,6 +35,7 @@ class TextButton : public Button{
 
     void PrintTextButtonInfo();
     void Render(SDL_Surface* Surface);
+    protected:
     Text mText;
 
 };

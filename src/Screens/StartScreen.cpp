@@ -14,7 +14,7 @@ void StartScreen::Render(SDL_Surface* Surface){
 void StartScreen::Update(){
     ;
 }
-void StartScreen::HandleEvent(SDL_Event& E){
+void StartScreen::HandleEvent(const SDL_Event& E){
     if (E.type == SDL_MOUSEBUTTONDOWN
     &&  E.button.button == SDL_BUTTON_LEFT){
         int x = E.button.x;

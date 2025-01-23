@@ -10,7 +10,7 @@ void TransitionScreen::Render(SDL_Surface* Surface){
 void TransitionScreen::Update(){
     ;
 }
-void TransitionScreen::HandleEvent(SDL_Event& E){
+void TransitionScreen::HandleEvent(const SDL_Event& E){
     if (E.type == SDL_KEYDOWN && E.key.keysym.sym == SDLK_SPACE){
         SDL_Event ChangeScene{Events::CHANGE_SCENE};
         ChangeScene.motion.which = mTransitionTo;

@@ -20,8 +20,8 @@ void TutorialScreen::Render(SDL_Surface* Surface){
 void TutorialScreen::Update(){
     ;
 }
-void TutorialScreen::HandleEvent(SDL_Event& E){
-    if (E.type = SDL_MOUSEBUTTONDOWN
+void TutorialScreen::HandleEvent(const SDL_Event& E){
+    if (E.type == SDL_MOUSEBUTTONDOWN
         && E.button.button == SDL_BUTTON_LEFT){
         
         if (mPreviousButton.IsWithinBounds(E.motion.x, E.motion.y)){
