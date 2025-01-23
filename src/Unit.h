@@ -23,6 +23,7 @@ class Unit : public Rectangle{
         void SetRow(int Row){mRow = Row;};
 
         Status mStatus{Empty};
+        bool mDEBUG_UseSprite{true}; // only used to debug
 
         void Render(SDL_Surface* Destination);
 

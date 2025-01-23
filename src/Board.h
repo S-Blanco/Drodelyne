@@ -19,7 +19,9 @@ class Board {
 
         void HandleEvent(const SDL_Event& E, int& mCurrentMove);
         void Render(SDL_Surface* Surface);
-        bool IsIntersectionValid(int X, int Y);
+        static const int mSize{19};
+
+        
 
     private:
         int mCellWidth{35}; //Note: box sprite = 33px but 2 px for edges
@@ -27,11 +29,14 @@ class Board {
         int mUpperX{25};
         int mUpperY{54};
         int mEdgeWidth{5};
-        static const int mSize{19};
 
         bool IsMoveLegal(int row, int col);
+        void PlaceUnit(int row, int col, Status Player);
         void Forecaster(int CardID, bool WasSacrificed=false);
         void ForecastResetter();
+        int GetGroupLiberties(int (&arr)[19][19], int GroupId);
+        void RemoveGroup(int GroupId);
+        void ReplaceGroupIndex(int (&arr)[19][19], int OldIndex, int NewIndex);
 
         /*  
             Status mBoardForecast[GameSetting::HandSize][mSize][mSize];
@@ -43,5 +48,11 @@ class Board {
         Status mPlayerThisTurn;
         Status mOpponent;
         Unit board[mSize][mSize];
+        
+        std::vector<int> GroupIndex;
+        std::vector<int> GroupLiberties;
+        int mCurrentGroupIndex{1};
+        int mTemp_GroupsOnBoard[mSize][mSize]{0}; // used to check if a move is valid before actually changing the Group numbering
+        int mGroupsOnBoard[mSize][mSize]{0};
         Image mEmptyBoard;
 };

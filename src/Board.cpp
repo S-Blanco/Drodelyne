@@ -49,8 +49,13 @@ void Board::HandleEvent(const SDL_Event& E, int& CurrentMove){
     default:
         if (E.type == Events::UNIT_PLAYED){
             // check player of previous move and fill the board with their unit
-                (CurrentMove-1)%2==0 ? board[E.motion.y][E.motion.x].mStatus = Player1
-                                     : board[E.motion.y][E.motion.x].mStatus = Player2;
+                if ((CurrentMove-1)%2==0){
+                    PlaceUnit(E.motion.y, E.motion.x, Player1);
+
+                } else {
+                    PlaceUnit(E.motion.y, E.motion.x, Player2);
+                }
+                                     
                 Status temp = mPlayerThisTurn;
                 mPlayerThisTurn = mOpponent;
                 mOpponent = temp;
@@ -79,24 +84,139 @@ void Board::Render(SDL_Surface* Surface){
     }
 }
 
-bool Board::IsIntersectionValid(int row, int col){ return (row >= 0 && row < mSize && col >= 0 && col < mSize); }
-
 
 bool Board::IsMoveLegal(int row, int col){
-    if(!IsIntersectionValid(row, col)) { return false;}
-    
+    // Cannot play on another unit
     if (board[row][col].mStatus == Player1
     ||  board[row][col].mStatus == Player2) {return false;}
-    
-    if ((row > 18 && board[row+1][col].mStatus == mOpponent) &&
-        (row < 0  && board[row-1][col].mStatus == mOpponent) &&
-        (col < 18 && board[row][col+1].mStatus == mOpponent) &&
-        (col > 0  && board[row][col-1].mStatus == mOpponent)){ 
-        // TODO: add illegal move sound event here
-        return false; }
+
+    // Cannot play in a space without liberties
+    if (board[row+1][col].mStatus == mOpponent && 
+        board[row-1][col].mStatus == mOpponent && 
+        board[row][col+1].mStatus == mOpponent && 
+        board[row][col-1].mStatus == mOpponent ){
+        return false;
+    }
     return true;
 }
 
+
+int Board::GetGroupLiberties(int (&arr)[19][19], int GroupId){
+    int Liberties{0};
+    for (int col = 0; col < mSize; ++col){
+        for (int row = 0; row < mSize; ++row){
+            if (arr[row][col] == GroupId){
+                if (row < 18 && arr[row+1][col] == Empty) {++Liberties;}
+                if (row > 0  && arr[row-1][col] == Empty) {++Liberties;}
+                if (col < 18 && arr[row][col+1] == Empty) {++Liberties;}
+                if (col > 0  && arr[row][col-1] == Empty) {++Liberties;}
+            }
+        }
+    }
+    return Liberties;
+}
+
+void Board::RemoveGroup(int GroupId){
+    for (int col = 0; col < mSize; ++col){
+        for (int row = 0; row < mSize; ++row){
+            if (mGroupsOnBoard[row][col] == GroupId){
+                mGroupsOnBoard[row][col] = 0;
+                board[row][col].mStatus = Empty;
+            }
+        }
+    }
+}
+
+
+void Board::ReplaceGroupIndex(int (&arr)[19][19], int OldIndex, int NewIndex){
+    for (int col = 0; col < mSize; ++col){
+        for (int row = 0; row < mSize; ++row){
+            if (arr[row][col] == OldIndex) {arr[row][col] = NewIndex;}
+        }
+    }
+}
+void Board::PlaceUnit(int row, int col, Status Player){
+// First we remove the captured enemy group
+    if (row > 0 && board[row-1][col].mStatus == mOpponent ){
+        int GroupID = mGroupsOnBoard[row-1][col];
+        int Liberties = GetGroupLiberties(mGroupsOnBoard, GroupID);
+        if (Liberties == 1){
+            RemoveGroup(GroupID);
+        }
+    }
+    if (row < 18 && board[row+1][col].mStatus == mOpponent){
+        int GroupID = mGroupsOnBoard[row-1][col];
+        int Liberties = GetGroupLiberties(mGroupsOnBoard, GroupID);
+        if (Liberties == 1){
+            RemoveGroup(GroupID);
+        }
+    }
+    if (col > 0 && board[row][col-1].mStatus == mOpponent){
+        int GroupID = mGroupsOnBoard[row-1][col];
+        int Liberties = GetGroupLiberties(mGroupsOnBoard, GroupID);
+        if (Liberties == 1){
+            RemoveGroup(GroupID);
+        }
+    }
+    if (col < 18 && board[row][col+1].mStatus == mOpponent){
+        int GroupID = mGroupsOnBoard[row-1][col];
+        int Liberties = GetGroupLiberties(mGroupsOnBoard, GroupID);
+        if (Liberties == 1){
+            RemoveGroup(GroupID);
+        }
+    }
+
+// Then we see if this merges multiple of our groups
+    std::vector<int> AdjacentAlliesIdx;
+
+    if ((row < 18 && board[row+1][col].mStatus == mPlayerThisTurn)){
+        AdjacentAlliesIdx.emplace_back(mGroupsOnBoard[row+1][col]);
+    }
+    if (row > 0 && board[row-1][col].mStatus == mPlayerThisTurn){
+        AdjacentAlliesIdx.emplace_back(mGroupsOnBoard[row-1][col]);
+    }
+    if (col < 18 && board[row][col+1].mStatus == mPlayerThisTurn){
+        AdjacentAlliesIdx.emplace_back(mGroupsOnBoard[row][col+1]);
+    }
+    if (col > 0 && board[row][col-1].mStatus == mPlayerThisTurn){
+        AdjacentAlliesIdx.emplace_back(mGroupsOnBoard[row][col-1]);
+    }
+
+
+    if(AdjacentAlliesIdx.size() > 0){
+        for (int col = 0; col < mSize; ++col){
+            for (int row = 0; row < mSize; ++row){
+                mTemp_GroupsOnBoard[row][col] = mGroupsOnBoard[row][col];
+            }
+        }
+        mTemp_GroupsOnBoard[row][col] = mCurrentGroupIndex;
+        for (int idx : AdjacentAlliesIdx){ // Replacing groups in temp copy
+            ReplaceGroupIndex(mTemp_GroupsOnBoard, idx, mCurrentGroupIndex);
+        }
+        if(GetGroupLiberties(mTemp_GroupsOnBoard, mCurrentGroupIndex) != 0){
+            for (int i = 0; i < mSize; ++i){
+                for (int j = 0; j < mSize; ++j){
+                    mGroupsOnBoard[i][j] = mTemp_GroupsOnBoard[i][j];
+                }
+            }
+        ++mCurrentGroupIndex; // increment for next use
+        } else {// illegal move, copy old board state (should be caught at when displaying legal move [but currently is not])
+            for (int i = 0; i < mSize; ++i){
+                for (int j = 0; j < mSize; ++j){
+                    mTemp_GroupsOnBoard[i][j] = mGroupsOnBoard[i][j];
+                }
+            }
+            std::cout << std::format("Illegal move!") << std::endl; // should never happen?
+        }
+            
+        
+    } else{
+        mGroupsOnBoard[row][col] = mCurrentGroupIndex;
+        ++mCurrentGroupIndex;
+    }
+    board[row][col].mStatus = Player;
+
+}
 /*
  * Forecast which zone of the board will be playable with the selected card
 */

@@ -15,9 +15,16 @@ void Unit::HandleEvent(const SDL_Event& E, int& MoveNbr){
 
 
 void Unit::Render(SDL_Surface* Destination){
-    if      (mStatus==Player1) {SDL_BlitScaled(P1Unit(), nullptr, Destination, &mRect);}
-    else if (mStatus==Player2) {SDL_BlitScaled(P2Unit(), nullptr, Destination, &mRect);}
-    else if (mStatus==Forecast) {SDL_BlitScaled(ForecastUnit(), nullptr, Destination, &mRect);}
+    if (mDEBUG_UseSprite){
+        if      (mStatus==Player1) {SDL_BlitScaled(P1Unit(), nullptr, Destination, &mRect);}
+        else if (mStatus==Player2) {SDL_BlitScaled(P2Unit(), nullptr, Destination, &mRect);}
+        else if (mStatus==Forecast) {SDL_BlitScaled(ForecastUnit(), nullptr, Destination, &mRect);}
+    } else{
+        SDL_FillRect(Destination,
+                     &mRect,
+                     SDL_MapRGB(Destination->format, mColor.r, mColor.g, mColor.b));
+    }
+    
 }
 
 void Unit::HandleMouseClick(const SDL_MouseButtonEvent& E, int& CurrentMove){
