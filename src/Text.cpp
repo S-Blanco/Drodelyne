@@ -1,15 +1,6 @@
 #include "Text.h"
 
 
-Text::Text(int WrapSize, std::string Content)
-    :mFont{TTF_OpenFont("../assets/fonts/Roboto-Medium.ttf", 56)},mContent{Content}, mWrapSize{WrapSize}
-    {
-        if(!mFont){
-            std::cout << "Error loading font" << SDL_GetError() <<std::endl;
-        }
-        CreateSurface(Content);
-    }
-
 Text::Text(int WrapSize, SDL_Rect DestRect, std::string Content)
 :mDestRectangle{DestRect}, mFont{TTF_OpenFont("../assets/fonts/Roboto-Medium.ttf", 56)}, mContent{Content}, mWrapSize{WrapSize}
     {
@@ -36,7 +27,7 @@ void Text::CreateSurface(std::string Content){
     }
 }
 
-void Text::Render(SDL_Surface* DestSurface){
+void Text::Render(SDL_Surface* Surface){
     //Should be moved to ctor
     int Alignement = TTF_WRAPPED_ALIGN_CENTER;
     TTF_SetFontWrappedAlign(mFont, Alignement);
@@ -49,8 +40,12 @@ void Text::Render(SDL_Surface* DestSurface){
     if(!TextSurface){
         std::cout << "Error generating the text : " << SDL_GetError() << std::endl;
     }
-    
-    SDL_BlitSurface(TextSurface, nullptr, DestSurface, &mDestRectangle);
+    #ifdef DEBUG
+        SDL_FillRect(Surface,
+                 &mDestRectangle,
+                 SDL_MapRGB(Surface->format, 255, 0, 255));
+    #endif
+    SDL_BlitSurface(TextSurface, nullptr, Surface, &mDestRectangle);
 }
 
 TTF_Font* Text::LoadFont(int FontSize){
