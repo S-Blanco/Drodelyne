@@ -15,12 +15,14 @@ Board::Board(int UpperX, int UpperY, int ImgWidth, int ImgHeight)
                 SDL_Rect{mUpperX,mUpperY,ImgWidth,ImgHeight},
                 ScalingMode::Fill)
     {
-    for (int i=0; i<mSize; ++i){
-        for (int j=0; j<mSize; ++j){
-            board[i][j].ChangeRectangle((mUpperX+mEdgeWidth+j*mCellWidth),(mUpperY+mEdgeWidth+i*mCellHeight),
-                                        mCellWidth, mCellHeight);
-            board[i][j].SetRow(i);
-            board[i][j].SetCol(j);
+    for (int row=0; row<mSize; ++row){
+        for (int col=0; col<mSize; ++col){
+            board[row][col].ChangeRectangle((mUpperX + mEdgeWidth + col * mCellWidth),
+                                            (mUpperY + mEdgeWidth + row * mCellHeight),
+                                            mCellWidth,
+                                            mCellHeight);
+            board[row][col].SetRow(row);
+            board[row][col].SetCol(col);
         }
     }
 }
@@ -36,8 +38,11 @@ void Board::HandleEvent(const SDL_Event& E, int& CurrentMove){
     case SDL_MOUSEBUTTONDOWN:
         if (E.button.button == SDL_BUTTON_LEFT){
             // Compute which cell was clicked
-            MouseCol = (E.motion.x - mUpperX) / mCellWidth;
-            MouseRow = (E.motion.y - mUpperY) / mCellHeight;
+            // if statement necessary to avoid rounding up to zero if mouse out (but close) of board
+            E.motion.x >= mUpperX ? MouseCol = (E.motion.x - mUpperX) / mCellWidth
+                                  : MouseCol = -1;
+            E.motion.y >= mUpperY ? MouseRow = (E.motion.y - mUpperY) / mCellHeight
+                                  : MouseRow = -1;
             
             if(IsMoveLegal(MouseRow, MouseCol)){ // check that mouse is within bounds
                 if (board[MouseRow][MouseCol].mStatus == Forecast){
@@ -84,8 +89,12 @@ void Board::Render(SDL_Surface* Surface){
     }
 }
 
+bool Board::IsIntersectionValid(int row, int col){ return (row >= 0 && row < mSize && col >= 0 && col < mSize); }
+
 
 bool Board::IsMoveLegal(int row, int col){
+    if(!IsIntersectionValid(row, col)) { return false;}
+    
     // Cannot play on another unit
     if (board[row][col].mStatus == Player1
     ||  board[row][col].mStatus == Player2) {return false;}
@@ -145,21 +154,21 @@ void Board::PlaceUnit(int row, int col, Status Player){
         }
     }
     if (row < 18 && board[row+1][col].mStatus == mOpponent){
-        int GroupID = mGroupsOnBoard[row-1][col];
+        int GroupID = mGroupsOnBoard[row+1][col];
         int Liberties = GetGroupLiberties(mGroupsOnBoard, GroupID);
         if (Liberties == 1){
             RemoveGroup(GroupID);
         }
     }
     if (col > 0 && board[row][col-1].mStatus == mOpponent){
-        int GroupID = mGroupsOnBoard[row-1][col];
+        int GroupID = mGroupsOnBoard[row][col-1];
         int Liberties = GetGroupLiberties(mGroupsOnBoard, GroupID);
         if (Liberties == 1){
             RemoveGroup(GroupID);
         }
     }
     if (col < 18 && board[row][col+1].mStatus == mOpponent){
-        int GroupID = mGroupsOnBoard[row-1][col];
+        int GroupID = mGroupsOnBoard[row][col+1];
         int Liberties = GetGroupLiberties(mGroupsOnBoard, GroupID);
         if (Liberties == 1){
             RemoveGroup(GroupID);

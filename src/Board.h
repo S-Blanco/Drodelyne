@@ -30,6 +30,7 @@ class Board {
         int mUpperY{54};
         int mEdgeWidth{5};
 
+        bool IsIntersectionValid(int row, int col);
         bool IsMoveLegal(int row, int col);
         void PlaceUnit(int row, int col, Status Player);
         void Forecaster(int CardID, bool WasSacrificed=false);
