@@ -23,6 +23,7 @@ namespace Events{
     const Uint32 P2_PASSED{SDL_RegisterEvents(1)};
     const Uint32 P1_PASSED{SDL_RegisterEvents(1)};
     const Uint32 SCORE_GAME{SDL_RegisterEvents(1)};
+    const Uint32 DELETE_ZONE{SDL_RegisterEvents(1)};
 
 }
  

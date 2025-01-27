@@ -8,12 +8,14 @@ add_executable(Game
                Button.cpp
                Card.cpp
                DrawPile.cpp
+               DrawRectangle.cpp
                Events.cpp
                Image.cpp
                main.cpp
                Orchestra.cpp
                Player.cpp
                Rectangle.cpp
+               Scoring.cpp
                Screens/GameScreen.cpp
                Screens/SettingsScreen.cpp
                Screens/StartScreen.cpp

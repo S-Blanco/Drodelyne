@@ -17,10 +17,10 @@ Board::Board(int UpperX, int UpperY, int ImgWidth, int ImgHeight)
     {
     for (int row=0; row<mSize; ++row){
         for (int col=0; col<mSize; ++col){
-            board[row][col].ChangeRectangle((mUpperX + mEdgeWidth + col * mCellWidth),
-                                            (mUpperY + mEdgeWidth + row * mCellHeight),
-                                            mCellWidth,
-                                            mCellHeight);
+            board[row][col].ChangeRectangle((mUpperX + Layout::EdgeWidth + col * Layout::CellWidth),
+                                            (mUpperY + Layout::EdgeWidth + row * Layout::CellHeight),
+                                            Layout::CellWidth,
+                                            Layout::CellHeight);
             board[row][col].SetRow(row);
             board[row][col].SetCol(col);
         }
@@ -39,9 +39,9 @@ void Board::HandleEvent(const SDL_Event& E, int& CurrentMove){
         if (E.button.button == SDL_BUTTON_LEFT){
             // Compute which cell was clicked
             // if statement necessary to avoid rounding up to zero if mouse out (but close) of board
-            E.motion.x >= mUpperX ? MouseCol = (E.motion.x - mUpperX) / mCellWidth
+            E.motion.x >= mUpperX ? MouseCol = (E.motion.x - mUpperX) / Layout::CellWidth
                                   : MouseCol = -1;
-            E.motion.y >= mUpperY ? MouseRow = (E.motion.y - mUpperY) / mCellHeight
+            E.motion.y >= mUpperY ? MouseRow = (E.motion.y - mUpperY) / Layout::CellHeight
                                   : MouseRow = -1;
             
             if(IsMoveLegal(MouseRow, MouseCol)){ // check that mouse is within bounds
@@ -70,6 +70,7 @@ void Board::HandleEvent(const SDL_Event& E, int& CurrentMove){
             Status temp = mPlayerThisTurn;
             mPlayerThisTurn = mOpponent;
             mOpponent = temp;
+            ForecastResetter();
         } else if (E.type==Events::CARD_SELECTED){
             Forecaster(E.button.button);
         } else if(E.type == Events::CARD_UNSELECTED){

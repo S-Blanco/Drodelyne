@@ -1,6 +1,7 @@
 #pragma once
 #include "Settings.h"
 #include "Global.h"
+#include "Layout.h"
 
 #include <SDL.h>
 #include <SDL_mixer.h>
@@ -24,11 +25,8 @@ class Board {
         
 
     private:
-        int mCellWidth{35}; //Note: box sprite = 33px but 2 px for edges
-        int mCellHeight{35};
-        int mUpperX{25};
-        int mUpperY{54};
-        int mEdgeWidth{5};
+        int mUpperX{25}; // ???
+        int mUpperY{54}; // ???
 
         bool IsIntersectionValid(int row, int col);
         bool IsMoveLegal(int row, int col);

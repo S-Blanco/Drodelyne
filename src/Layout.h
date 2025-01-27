@@ -6,6 +6,10 @@ TODO : Currently fixed but should adapt to the size of the window later
 */
 namespace Layout{
 
+inline const int CellWidth{35}; //Note: box sprite = 33px but 2 px for edges
+inline const int CellHeight{35};
+inline const int EdgeWidth{5};
+
 inline const int ScreenWidth{1366};
 inline const int ScreenHeight{768};
 

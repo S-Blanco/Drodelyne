@@ -5,6 +5,7 @@
 #include "Screen.h"
 #include "../UI.h"
 #include "../Board.h"
+#include "../Scoring.h"
 
 #include "../Deck.h"
 
@@ -14,16 +15,19 @@ class GameScreen : public Screen{
     GameScreen(SDL_Rect ArenaPos);
     void Render(SDL_Surface* Surface);
     void Update();
-    void HandleEvent(SDL_Event& E);
+    void HandleEvent(const SDL_Event& E);
     
+    Board mArena;
     protected:
     int mCurrentMove{0};
     bool mP1HasPassed{false};
     bool mP2HasPassed{false};
+    bool mScoringPhase{false};
     
-    UI mGameUI{"Alice", Player1DeckFile, Player1DeckID, "../assets/img/cards/card_p1.png",
-               "Bob",   Player2DeckFile, Player2DeckID,"../assets/img/cards/card_p2.png"};
-    Board mArena;
+    Scoring Score;
+    UI mGameUI{"Player 1", Player1DeckFile, Player1DeckID, "../assets/img/cards/card_p1.png",
+               "Player 2", Player2DeckFile, Player2DeckID, "../assets/img/cards/card_p2.png"};
+    
 
     
 };

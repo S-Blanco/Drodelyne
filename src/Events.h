@@ -25,5 +25,6 @@ namespace Events{
     extern const Uint32 P2_PASSED;
     extern const Uint32 P1_PASSED;
     extern const Uint32 SCORE_GAME;
+    extern const Uint32 DELETE_ZONE;
 }
  

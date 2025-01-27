@@ -9,6 +9,7 @@
 class Text{
     public:
         Text(int WrapSize = 0, SDL_Rect DestRect = {0,0,0,0}, std::string Content=" ");
+        Text(int FontSize, int WrapSize = 0, SDL_Rect DestRect = {0,0,0,0}, std::string Content=" ");
         ~Text();
         Text(const Text&) = delete;
         Text& operator=(const Text&) = delete;
