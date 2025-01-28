@@ -16,6 +16,7 @@ void Scoring::Render(SDL_Surface* Surface){
     mRedScoreButton.Render(Surface);
     mBlueScoreText.Render(Surface);
     mRedScoreText.Render(Surface);
+    mComputeScore.Render(Surface);
 }
 
 
@@ -37,6 +38,13 @@ void Scoring::HandleEvent(const SDL_Event& Event){
             mBlueIsActive = false;
             mBlueScoreButton.SetColor(mBlueColor[0]);
             mRedScoreButton.SetColor(mRedColor[1]);
+        } else if(mComputeScore.IsWithinBounds(Event.button.x, Event.button.y)){
+            mBlueScore = 0;
+            mRedScore = 0;
+            for (DrawRectangle& Rect : mBlueRegions){ mBlueScore += Rect.GetScore(); }
+            for (DrawRectangle& Rect : mRedRegions) { mRedScore += Rect.GetScore(); }
+            mBlueScoreText.mContent = std::format("Blue Score :\n {}",mBlueScore);
+            mRedScoreText.mContent = std::format("Red Score :\n {}",mRedScore);
         }
     }
     if (mBlueIsActive){

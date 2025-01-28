@@ -24,19 +24,26 @@ class Scoring {
 	Text mBlueScoreText{200, {0,0,200, 200},"Blue Score :\n -"};
 	Text mRedScoreText{200, {0,200,200, 200},"Red Score :\n -"};
     TextButton mBlueScoreButton{"Select blue territories",
-                          {Layout::GobanTopX + Layout::GobanWidth + Layout::CardMarginX,
-                           Layout::GobanTopY,
-                            2*Layout::CardWidth + Layout::CardMarginX,
-                            150},
-                            mBlueColor[1]
-                          };
+                                {Layout::GobanTopX + Layout::GobanWidth + Layout::CardMarginX,
+                                Layout::GobanTopY,
+                                2*Layout::CardWidth + Layout::CardMarginX,
+                                150},
+                                mBlueColor[1]
+                          	};
     TextButton mRedScoreButton{"Select red territories",
-                         {Layout::GobanTopX + Layout::GobanWidth + Layout::CardMarginX,
-                           Layout::GobanTopY + Layout::CardHeight,
-                           2*Layout::CardWidth + Layout::CardMarginX,
-                           150},
-                           mRedColor[0]    
-                        };
+                         	   {Layout::GobanTopX + Layout::GobanWidth + Layout::CardMarginX,
+                           	   Layout::GobanTopY + Layout::CardHeight,
+                           	   2*Layout::CardWidth + Layout::CardMarginX,
+                           	   150},
+                           	   mRedColor[0]    
+                        	};
+	TextButton mComputeScore{"Compute score", 
+							 {Layout::GobanTopX + Layout::GobanWidth + Layout::CardMarginX,
+                           	 Layout::GobanTopY + 2 * Layout::CardHeight,
+                           	 2*Layout::CardWidth + Layout::CardMarginX,
+                           	 100},
+                           	 {191,168,0}
+                        	};
 
     std::vector<DrawRectangle> mBlueRegions;
 	std::vector<DrawRectangle> mRedRegions;
