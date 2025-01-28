@@ -4,7 +4,8 @@ set(CMAKE_CXX_STANDARD 20)
 project(Drodelyne VERSION 1.0.0)
 
 add_executable(Game
-               Board.cpp               
+               Board.cpp
+               Box.cpp
                Button.cpp
                Card.cpp
                DrawPile.cpp

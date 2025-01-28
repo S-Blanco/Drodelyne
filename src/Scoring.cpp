@@ -24,16 +24,19 @@ void Scoring::HandleEvent(const SDL_Event& Event){
         && Event.button.button == SDL_BUTTON_LEFT){
         if (Event.button.x >= Layout::GobanTopX && Event.button.x <= Layout::GobanTopX + Layout::GobanWidth
          && Event.button.y >= Layout::GobanTopY && Event.button.y <= Layout::GobanTopY + Layout::GobanHeight){
-            mBlueIsActive ? mBlueRegions.emplace_back(0, 0, 0, 0, idx++, mBlueColor[1])
-                          : mRedRegions.emplace_back(0, 0, 0, 0, idx++, mRedColor[1]);
-            
+            mBlueIsActive ? mBlueRegions.emplace_back(0, 0, 0, 0, Layout::TerritoryBorderSize, mIndex++, mBlueColor[0], mBlueColor[1])
+                          :  mRedRegions.emplace_back(0, 0, 0, 0, Layout::TerritoryBorderSize, mIndex++, mRedColor[0],  mRedColor[1]);
         }
     }
     if (Event.type == SDL_MOUSEBUTTONDOWN){
         if (mBlueScoreButton.IsWithinBounds(Event.button.x, Event.button.y)){
             mBlueIsActive = true;
+            mBlueScoreButton.SetColor(mBlueColor[1]);
+            mRedScoreButton.SetColor(mRedColor[0]);
         } else if (mRedScoreButton.IsWithinBounds(Event.button.x, Event.button.y)){
             mBlueIsActive = false;
+            mBlueScoreButton.SetColor(mBlueColor[0]);
+            mRedScoreButton.SetColor(mRedColor[1]);
         }
     }
     if (mBlueIsActive){
@@ -46,7 +49,7 @@ void Scoring::HandleEvent(const SDL_Event& Event){
             } else if(Event.type == Events::DELETE_ZONE){
                 int DeleteIdx{0};
                 for (DrawRectangle& Rect : mBlueRegions){
-                    if (Rect.idx == Event.motion.x){
+                    if (Rect.GetIndex() == Event.motion.x){
                         mBlueRegions.erase(mBlueRegions.begin() + DeleteIdx);
                         break;
                     }
@@ -65,7 +68,7 @@ void Scoring::HandleEvent(const SDL_Event& Event){
             } else if(Event.type == Events::DELETE_ZONE){
                 int DeleteIdx{0};
                 for (DrawRectangle& Rect : mRedRegions){
-                    if (Rect.idx == Event.motion.x){
+                    if (Rect.GetIndex() == Event.motion.x){
                         mRedRegions.erase(mRedRegions.begin() + DeleteIdx);
                         break;
                     }

@@ -13,7 +13,7 @@ class Scoring {
     void HandleEvent(const SDL_Event& Event);
 
     protected:
-	int idx{0};
+	int mIndex{0};
 
 	int mBlueScore{0};
 	int mRedScore{0};
@@ -28,7 +28,7 @@ class Scoring {
                            Layout::GobanTopY,
                             2*Layout::CardWidth + Layout::CardMarginX,
                             150},
-                            mBlueColor[0]
+                            mBlueColor[1]
                           };
     TextButton mRedScoreButton{"Select red territories",
                          {Layout::GobanTopX + Layout::GobanWidth + Layout::CardMarginX,

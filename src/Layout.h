@@ -40,4 +40,6 @@ inline const int TopDeckY{GobanTopY + GobanHeight - CardHeight};
 inline const int PassButtonHeight{75};
 inline const int PassButtonMarginY{10};
 inline const int InterRowY{(GobanHeight - 2*CardHeight - CardMarginY - PassButtonHeight + PassButtonMarginY)/2};
+
+inline const int TerritoryBorderSize{5};
 }

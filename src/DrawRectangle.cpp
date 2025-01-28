@@ -1,11 +1,11 @@
 #include "DrawRectangle.h"
 #include <iostream>
 #include <format>
-DrawRectangle::DrawRectangle(int x, int y, int w, int h, int idx):Zone{x,y,w,h}, idx{idx}{}
 
-
-DrawRectangle::DrawRectangle(int x, int y, int w, int h, int idx, SDL_Color Color)
-:Zone{x,y,w,h}, idx{idx}, mColor{Color}{}
+DrawRectangle::DrawRectangle(int OuterRect_x, int OuterRect_y, int OuterRect_w, int OuterRect_h,
+                             int BorderSize, int Index, SDL_Color InsideColor, SDL_Color OutsideColor)
+:Zone{{OuterRect_x, OuterRect_y, OuterRect_w, OuterRect_h}, BorderSize, Index, InsideColor, OutsideColor}, mIndex{Index}
+{}
 
 
 bool DrawRectangle::IsWithinBounds(int x, int y){
@@ -17,7 +17,7 @@ bool DrawRectangle::IsWithinBounds(int x, int y){
 }
 
 void DrawRectangle::Render(SDL_Surface* Surface){
-    SDL_FillRect(Surface, &Zone.mRect, SDL_MapRGB(Surface->format, mColor.r, mColor.g, mColor.b));
+    Zone.Render(Surface);
 }
 
 void DrawRectangle::HandleEvent(SDL_Event E){
@@ -25,12 +25,13 @@ void DrawRectangle::HandleEvent(SDL_Event E){
         && E.button.button == SDL_BUTTON_RIGHT){
             if(IsWithinBounds(E.button.x, E.button.y)){
                 SDL_Event Delete{Events::DELETE_ZONE};
-                Delete.motion.x = idx;
+                Delete.motion.x = mIndex;
                 SDL_PushEvent(&Delete);
             }
     } else if (E.type == SDL_MOUSEBUTTONDOWN && E.button.button == SDL_BUTTON_LEFT){
         IsPressed = true;
-        if (E.button.x >= Layout::GobanTopX && E.button.y >= Layout::GobanTopY){
+        if (E.button.x >= Layout::GobanTopX && E.button.x <= Layout::GobanTopX + Layout::GobanWidth
+         && E.button.y >= Layout::GobanTopY && E.button.y <= Layout::GobanTopY + Layout::GobanHeight){
             x0 = Layout::EdgeWidth
                + Layout::GobanTopX
                + ((E.button.x - Layout::GobanTopX) / Layout::CellWidth) * Layout::CellWidth;
@@ -41,6 +42,7 @@ void DrawRectangle::HandleEvent(SDL_Event E){
             y1 = E.button.y;
             Zone.SetX(E.button.x);
             Zone.SetY(E.button.y);
+            Zone.ComputeInnerBox();
         }
         
     } else if(E.type == SDL_MOUSEMOTION && IsPressed){
@@ -68,6 +70,7 @@ void DrawRectangle::HandleEvent(SDL_Event E){
             Zone.SetY(y1);
             Zone.SetH(y0 - y1);
         }
+        Zone.ComputeInnerBox();
     } else if (E.type == SDL_MOUSEBUTTONUP){
         IsPressed = false;
         mScore = (Zone.GetW() / Layout::CellWidth) * (Zone.GetH() / Layout::CellHeight);
