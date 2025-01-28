@@ -17,7 +17,7 @@ void SettingsScreen::Update(){
 void SettingsScreen::HandleEvent(const SDL_Event& E){
     if (E.type == SDL_MOUSEBUTTONDOWN && E.button.button == SDL_BUTTON_LEFT){
         if (mSoundUpButton.IsWithinBounds(E.motion.x, E.motion.y)){
-            if (mVolume < 10){
+            if (mVolume < mNbrVolumeStep){
                 ++mVolume;
             }
             mVolumeBar.SetWidth(mVolume * mVolumeBarWidth / mNbrVolumeStep);

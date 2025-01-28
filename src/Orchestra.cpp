@@ -31,12 +31,12 @@ void Orchestra::HandleEvent(const SDL_Event& E){
 
 void Orchestra::LowerMusic(){
     // TODO: add proper sound volume code, perception is log, not linear 
-    SoundVolume -= SDL_MIX_MAXVOLUME / 10;
+    SoundVolume -= SDL_MIX_MAXVOLUME / 8;
     if (SoundVolume < 0) SoundVolume = 0;
     Mix_VolumeMusic(SoundVolume);
 }
 void Orchestra::IncreaseMusic(){
-    SoundVolume += SDL_MIX_MAXVOLUME / 10;
+    SoundVolume += SDL_MIX_MAXVOLUME / 8;
     if (SoundVolume > SDL_MIX_MAXVOLUME) SoundVolume = SDL_MIX_MAXVOLUME;
     Mix_VolumeMusic(SoundVolume);
 }

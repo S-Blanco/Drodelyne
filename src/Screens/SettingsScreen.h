@@ -16,8 +16,8 @@ class SettingsScreen : public Screen{
     SettingsScreen(std::string File);
     Image mBackground;
     Text mSoundText{mVolumeBarWidth, {3*(Layout::ScreenWidth - mVolumeBarWidth)/7, 175, mVolumeBarWidth, 80}, "Volume"};
-    int mVolume{5};
-    const int mNbrVolumeStep{10};
+    int mVolume{4};
+    const int mNbrVolumeStep{8};
     const int mVolumeBarWidth{300};
     Rectangle mVolumeBarBackground{(Layout::ScreenWidth - mVolumeBarWidth)/2, 250,
                          mVolumeBarWidth, 80,
